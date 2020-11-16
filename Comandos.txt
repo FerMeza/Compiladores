@@ -1,8 +1,0 @@
-git clone <link>
-git status
-git pull
-git config --global user.email ""
-git config --global user.name ""
-git add ejemplo.txt
-git commit -m "blh blah"
-git push

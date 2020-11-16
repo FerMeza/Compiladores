@@ -1,13 +1,10 @@
-
 import java.lang.*;
+import java.io.FileNotFoundException;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.IOException;
-import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 
 %%
 %line 
@@ -74,23 +71,12 @@ import java.io.FileWriter;
 	public static final int PACK = 53;
 	public static final int INC = 54;
 	public static final int DEC = 55;
-
-/********************* Creacion del objeto archivo y objeto Yylexer para leer tokens desde un archivo. Meza Fernando: 13 Noviembre 2020********************/
-
-
-
-	public static File archivo = null;
+    public static final int PUNCOMA = 56;
+    public static final int COMA = 57;
+    public static final int PUNTO= 58;
+    public static final int DOSPUNTO = 59;
 	public static final int EOF = 0;
-	
-	public static void main(String[] args) {
-        try {
-        archivo = new File(args[0]);
-	 			Yylex lexer = new Yylex (new BufferedReader(new FileReader(archivo)));
-				lexer.yylex();
-	 			}catch (IOException e){
-	 			System.out.println("Ocurrio un error al intentar acceder al archivo");
-	 	}
-	}
+	public static File archivo = null;
 
 %}
 
@@ -104,7 +90,7 @@ import java.io.FileWriter;
 
 
 /**********************			Creacion de expresiones regulares.
-								Aguilar Paulina, Aviles Bryan, Meza Fernando: 17 Noviembre 2020  *************z***************/
+								Aguilar Paulina, Aviles Bryan, Meza Fernando: 15 Noviembre 2020  *************z***************/
 
 
 
@@ -142,6 +128,10 @@ rel_op_5 = ">"
 rel_op_6 = ">="
 inc = "++"
 decre = "--"
+puncoma = ";"
+coma = ","
+punto = "."
+dospunto = ":"
 pack = package
 var = var
 const = const
@@ -172,7 +162,7 @@ id = ({letras}|_) (_{digito}| {letras}|_) *
 
 
 /**********************Accion a realizar (retornar un numero) al encontrar un token, Hecho por 
-											Aguilar Paulina  y  Aviles Bryan 17 Noviembre 2020 ***************************/
+											Aguilar Paulina, Aviles Bryan y Meza Ortega Fernando 15 Noviembre 2020 ***************************/
  
 %%
 {espacios} {}
@@ -230,4 +220,8 @@ id = ({letras}|_) (_{digito}| {letras}|_) *
 {or} {return OR;  }
 {var} {return VAR;  }
 {pack} {return PACK; }
+{puncoma} {return PUNCOMA; } 
+{coma} {return COMA; }
+{punto} {return PUNTO; }
+{dospunto} {return DOSPUNTO; } 
 {id} {return ID;  }
