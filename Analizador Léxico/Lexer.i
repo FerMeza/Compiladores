@@ -158,7 +158,7 @@ for = for
 return = return
 break = break
 continue = continue
-id = ({letras}|_) (_{digito}| {letras}|_) *   
+id = ({letras}|_) ({digito}| {letras}|_) *   
 
 
 /**********************Accion a realizar (retornar un numero) al encontrar un token, Hecho por 
