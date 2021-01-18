@@ -6,6 +6,12 @@ usamos arraylist que es como un arreglo pero mas pro*/
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.lang.model.util.ElementScanner14;
+
+import org.graalvm.compiler.asm.aarch64.AArch64Assembler.Instruction;
+
+import dds.Token;
+
 /*Clase que nos ayuda para el analis sintactico y el semantico*/
 public class Parser{
 	//Declaraciones
@@ -45,7 +51,7 @@ public class Parser{
 
 		/*EL método parse es más que nada una prueba que posiblemente se irá cambiando
     en el futuro*/
-		void parse()throws IOException{
+	void parse()throws IOException{
         programa();	//simbolo inicial
         printTS();
         printTT();
@@ -64,19 +70,199 @@ public class Parser{
 	
   	// FIRST(programa) = {ε, int, float, char, double, void, func} 
      void programa()throws IOException{
-     		if(actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT) || actual.equals(Yylex.CHAR) 
+     	if(actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT) || actual.equals(Yylex.CHAR) 
         || actual.equals(Yylex.DOUBLE) || actual.equals(Yylex.VOID) || actual.equals(Yylex.FUNC)){
-     				declaraciones();
+     		declaraciones();
             funciones();
+        }
+        else
+        {
+            error("Error de sintaxis");
         }
      }
      
+     //FIRST(declaraciones) = {ε, int, float, char, double, void}
      void declaraciones()throws IOException{
-    		tipo();
+        if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
+        || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
+        || actual.equals(Yylex.VOID))
+        {
+    	tipo();
         lista_var();
-        eat(PUNCOMA);
+        eat(Yylex.PUNCOMA);
+        declaraciones();
+        }
      }
-     
+
+     //FIRST(tipo) = {int, float, char, double, void}
+     void tipo()throws IOException{
+        if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
+        || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
+        || actual.equals(Yylex.VOID)){
+            basico();
+            compuesto();
+        }
+     }
+
+    //FIRST(basico) = {int, float, char, double, void}
+    void basico()throws IOException
+    {
+        if (actual.equals(Yylex.INT))
+        {
+            eat(Yylex.INT);
+        }
+        else if (actual.equals(Yylex.FLOAT))
+        {
+            eat(Yylex.FLOAT);
+        }
+        else if (actual.equals(Yylex.CHAR))
+        {
+            eat(Yylex.CHAR);
+        }
+        else if (actual.equals(Yylex.DOUBLE))
+        {
+            eat(Yylex.DOUBLE);
+        }
+        else if (actual.equals(Yylex.VOID))
+        {
+            eat(Yylex.VOID);
+        }
+        else
+        {
+            error("Error de sintaxis");
+        }
+    }
+
+    //FIRST(compuesto) = {[, ε}
+    void compuesto()throws IOException
+    {
+        if (actual.equals(Yylex.COR_L))
+        {
+            eat(Yylex.COR_L);
+            eat(Yylex.ENTEROS);
+            eat(Yylex.COR_R);
+            compuesto();
+        }
+    }
+
+    //FIRST(lista_var) = {id}
+    void lista_var()throws IOException
+    {
+        if (actual.equals(Yylex.ID))
+        {
+            eat(Yylex.ID);
+            lista_var_1();
+        }
+    }
+
+    //FIRST(lista_var’) = {”,” , ε}
+    void lista_var_1()throws IOException
+    {
+        if (actual.equals(Yylex.COMA))
+        {
+            eat(Yylex.COMA);
+            eat(Yylex.ID);
+            lista_var_1();
+        }
+    }
+
+    //FIRST(funciones) = {func, ε}
+    void funciones()throws IOException
+    {
+        if (actual.equals(Yylex.FUNC))
+        {
+            eat(Yylex.FUNC);
+            eat(Yylex.ID);
+            eat(Yylex.PAR_L);
+            argumentos();
+            eat(Yylex.PAR_R);
+            bloque();
+            funciones();
+        }
+    }
+
+    //FIRST (argumentos) = {int, float, char, double, void, ε}
+    void argumentos()throws IOException
+    {
+        if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
+        || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
+        || actual.equals(Yylex.VOID))
+        {
+            lista_args();
+        }
+    }
+
+    //FIRST(lista_args) = {int, float, char, double, void}
+    void lista_args()throws IOException
+    {
+        if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
+        || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
+        || actual.equals(Yylex.VOID)){
+            tipo();
+            eat(Yylex.ID);
+            lista_var_1();
+        }
+        else
+        {
+            error("Error de sintaxis");
+        }
+    }
+
+    // FIRST(lista_args’) = {”,” , ε}
+    void lista_args_1()throws IOException
+    {
+        if (actual.equals(Yylex.COMA))
+        {
+            eat(Yylex.COMA);
+            eat(Yylex.ID);
+            lista_var_1();
+        }
+    }
+
+    //FIRST(bloque) = {“{”}
+    void bloque()throws IOException
+    {
+        if (actual.equals(Yylex.LLA_L))
+        {
+            eat(Yylex.LLA_L);
+            declaraciones();
+            instrucciones();
+            eat(Yylex.LLA_R);
+        }
+        else
+        {
+            error("Error de Sintaxis");
+        }
+    }
+    
+    //FIRST(instrucciones) = {if, id, while, do, break, “{”, switch}
+    void instrucciones()throws IOException
+    {
+        if (actual.equals(Yylex.IF) || actual.equals(Yylex.ID) ||
+            actual.equals(Yylex.WHILE) || actual.equals(Yylex.DO) ||
+            actual.equals(Yylex.BREAK) || actual.equals(Yylex.LLA_L))
+        {
+            sentencia();
+            instrucciones_1();
+        }
+        else
+        {
+            error("Error de Sintaxis");
+        }   
+    }
+
+    //FIRST(instrucciones’) = {if, id, while, do, break, “{”, switch, ε}
+    void instrucciones_1()throws IOException
+    {
+        if (actual.equals(Yylex.IF) || actual.equals(Yylex.ID) ||
+            actual.equals(Yylex.WHILE) || actual.equals(Yylex.DO) ||
+            actual.equals(Yylex.BREAK) || actual.equals(Yylex.LLA_L))
+        {
+            sentencia();
+            instrucciones_1();
+        }
+    }
+
 }
 
 
