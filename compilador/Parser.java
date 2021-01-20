@@ -6,12 +6,6 @@ usamos arraylist que es como un arreglo pero mas pro*/
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.lang.model.util.ElementScanner14;
-
-import org.graalvm.compiler.asm.aarch64.AArch64Assembler.Instruction;
-
-import dds.Token;
-
 /*Clase que nos ayuda para el analis sintactico y el semantico*/
 public class Parser{
 	//Declaraciones
@@ -22,8 +16,8 @@ public class Parser{
   //Necesitamos acceder al lexer, para poder "leer" los tokens
   Yylex lexer;
   
-  /*El atributo actual, es un token y nos indica el token que estamos "procesando"*/
-  Token actual;
+  public static Token actual = null; 
+  /*La variable actual, es un token y nos indica el token que estamos "procesando"*/
   /*Atributo direccion...*/
   int dir = 0;
   
@@ -32,7 +26,7 @@ public class Parser{
   public Parser(Yylex lexer)throws IOException{
   			//Toma el lexer pasado como argumento y lo asigna
         this.lexer = lexer;
-        //Recibe el primer Token y se convierte en el token actual
+        //Recibe el primer Token en la variable global y se convierte en el token actual
         actual = lexer.yylex();
         
         //Creacion de tabla de simbolos y de tipos
@@ -60,7 +54,7 @@ public class Parser{
     /*Eat nos permite consumir el simbolo gramatical actual*/
     void eat(int i) throws IOException{
         if(actual.equals(i)){
-            actual =lexer.yylex();
+            actual = lexer.yylex();
         }else{
             error("Error de sintaxis");
         }
@@ -68,16 +62,13 @@ public class Parser{
     
 /*Funciones que definen a los no terminales*/
 	
-  	// FIRST(programa) = {ε, int, float, char, double, void, func} 
+      // FIRST(programa) = {ε, int, float, char, double, void, func} 
+     
      void programa()throws IOException{
      	if(actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT) || actual.equals(Yylex.CHAR) 
         || actual.equals(Yylex.DOUBLE) || actual.equals(Yylex.VOID) || actual.equals(Yylex.FUNC)){
      		declaraciones();
             funciones();
-        }
-        else
-        {
-            error("Error de sintaxis");
         }
      }
      
@@ -101,6 +92,10 @@ public class Parser{
         || actual.equals(Yylex.VOID)){
             basico();
             compuesto();
+        }
+        else
+        {
+            error("Error de sintaxis");
         }
      }
 
@@ -139,7 +134,7 @@ public class Parser{
         if (actual.equals(Yylex.COR_L))
         {
             eat(Yylex.COR_L);
-            eat(Yylex.ENTEROS);
+            eat(Yylex.NUMEROS);
             eat(Yylex.COR_R);
             compuesto();
         }
@@ -242,7 +237,7 @@ public class Parser{
             actual.equals(Yylex.WHILE) || actual.equals(Yylex.DO) ||
             actual.equals(Yylex.BREAK) || actual.equals(Yylex.LLA_L))
         {
-            sentencia();
+            //sentencia();
             instrucciones_1();
         }
         else
@@ -258,140 +253,12 @@ public class Parser{
             actual.equals(Yylex.WHILE) || actual.equals(Yylex.DO) ||
             actual.equals(Yylex.BREAK) || actual.equals(Yylex.LLA_L))
         {
-            sentencia();
+            //sentencia();
             instrucciones_1();
         }
     }
 
-}
-
-
-/* De la clase Yylex, acceder como si fueran atributos estaticos
-NUMEROS = 100;
-DECEX = 101;
-CADENAS =102;
-TRUE = 103;
-FALSE  = 104;
-INT = 105;
-FLOAT = 106;
-CHAR = 107;
-DOUBLE = 108;
-VOID = 109;
-IF = 110;
-WHILE = 111;
-DO = 112;
-BREAK = 113;
-SWITCH = 114;
-CASE= 115;
-FUNC = 116;
-DEFAULT = 117;
-PAR_L = 118;
-PAR_R = 119; 
-COR_L = 120;
-COR_R = 121;
-LLA_L = 122;
-LLA_R = 123;
-ADD_OP1 = 124;
-ADD_OP2 = 125;
-MUL_OP1 = 126;
-MUL_OP2 = 127;
-MUL_OP3 = 128;
-UNARY_OP1 = 129;
-REL_OP_1 = 130;
-REL_OP_2 = 131;
-REL_OP_3 = 132;
-REL_OP_4 = 133;
-REL_OP_5 = 134;
-REL_OP_6 = 135;
-OR = 136;
-AND = 137;
-PUNCOMA = 138;
-COMA = 139;
-DOSPUNTOS = 140;
-ID = 141;
-*/
-
-////////////////////////////////////////////////////////////////////
-/*Codigo de ejemplo con una gramatica mas simple, sin todos los elementos de la clase*/
-public class Parser{
-
-    void D()throws IOException{
-        if(actual.equals(INT) || actual.equals(FLOAT) ){
-            int tipo = T();
-            L(tipo);
-            eat(PYC);
-            D();
-        }
-    }
-
-    int T()throws IOException{
-        int tipo;
-        tipo = B();
-        tipo = C(tipo);
-        return tipo;
-    }
-
-    int B() throws IOException{
-        if(actual.equals(INT)){
-            eat(INT);
-            return 0;
-        }
-        if(actual.equals(FLOAT)){
-            eat(FLOAT);
-            return 1;
-        }
-        error("error de sintaxis");
-        return -1;
-    }
-
-    int C (int base)throws IOException{
-        String valor;
-        int tipo;
-        int id;
-        if(actual.equals(LCOR)){            
-            eat(LCOR);
-            valor = actual.valor;
-            eat(NUM);
-            eat(RCOR);
-            tipo = C(base);            
-            id = tablaTipos.size();
-            int tam = Integer.parseInt(valor) * getTam(tipo);
-            tablaTipos.add(new Type(id, "array", tam ,Integer.parseInt(valor),tipo));
-            return id;
-        }else{
-            return base;
-        }
-    }
-
-    void L(int tipo)throws IOException{
-        if(actual.equals(ID)){
-            if(!buscar(actual.valor)){
-                tablaSimbolos.add(new Symbol(actual.valor,dir, tipo, 0, null ));
-                dir += getTam(tipo);
-            }else{
-                error("Variable definida dos veces");
-            }
-            eat(ID);
-            LP(tipo);
-        }else{
-            error("error de sintaxis");
-        }
-    }
-
-    void LP(int tipo)throws IOException{
-        if(actual.equals(COMA)){
-            eat(COMA);
-            if(!buscar(actual.valor)){
-                tablaSimbolos.add(new Symbol(actual.valor,dir, tipo, 0, null ));
-                dir += getTam(tipo);
-            }else{
-                error("Variable definida dos veces");
-            }
-            eat(ID);
-            LP(tipo);
-        }
-    }
-
+    /*Para imprimir msg de error */
     void error(String msg){
         System.out.println(msg);
     }

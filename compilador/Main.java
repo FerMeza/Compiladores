@@ -2,9 +2,10 @@ package compilador;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
 
-public class Main
+public class Main{
     public static void main(String args[]){
         /*Try para capturar la excepcion en caso de que no pueda abrir archivo... */
         try{            

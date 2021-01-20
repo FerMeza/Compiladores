@@ -116,6 +116,10 @@ and = "&&"
 puncoma = ";"
 coma = ","
 dospuntos = ":"
+comenLinea = --[^\n]*\n
+comenMulti =  ("<*")([^"*"]|"*"[^>])*("*>") 
+
+( (\") ( [^(\")\n]  | \\(\") )* (\") |  (\')([^(\')])*(\') )
 
 id = ({letras}|_) ({digito}| {letras}|_) *
 
@@ -125,6 +129,9 @@ id = ({letras}|_) ({digito}| {letras}|_) *
 
 %%
 
+espacios {} /*No hace nada, persona lectora de comentarios*/	
+comentmulti {}
+comentario {}	
 numeros {return nextToken(yytext(), NUMEROS, 0);} /*Valor lex, tipo(numero), subtipo(entero)*/
 decex {return nextToken(yytext(), DECEX, 1);} /*Valor lex, tipo(numero), subtipo(double)*/
 cadenas {return nextToken(yytext(), CADENAS);} /*Valor lex, tipo(cadena)*/
@@ -169,5 +176,4 @@ puncoma {return nextToken("", PUNCOMA);} /*Valor lex, tipo(puntoycoma)*/
 coma {return nextToken("", COMA);} /*Valor lex, tipo(coma)*/
 dospuntos {return nextToken("", DOSPUNTOS);} /*Valor lex, tipo(dospuntos)*/
 id {return nextToken(yytext(), ID);} /*Valor lex, tipo(id)*/
-espacios {} /*No hace nada, persona lectora de comentarios*/		
 .   {System.out.println("Error");}

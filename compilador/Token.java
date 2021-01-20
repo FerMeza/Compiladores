@@ -1,4 +1,4 @@
-package compiler;
+package compilador;
 
 public class Token{
     /*Clase: (tipo), valor: valor lexico, type: (subtypo)*/
