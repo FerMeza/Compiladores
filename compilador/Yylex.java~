@@ -1002,7 +1002,7 @@ class Yylex {
             // fall through
           case 82: break;
           case 36:
-            { return nextTOken("", ELSE);
+            { return nextToken("", ELSE);
             }
             // fall through
           case 83: break;

@@ -56,8 +56,8 @@ public class Parser{
         if(actual.equals(i)){
             actual = lexer.yylex();
         }else{
-            error("Error de sintaxis en linea " + Integer.toString(actual.linea) + 
-            " en la columna " + Integer.toString(actual.columna) + " en " + actual);
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
     
@@ -98,7 +98,8 @@ public class Parser{
         }
         else
         {
-            error("Error de sintaxis");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
      }
 
@@ -128,7 +129,8 @@ public class Parser{
         }
         else
         {
-            error("Error de sintaxis");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
 
@@ -156,7 +158,8 @@ public class Parser{
         }
         else
         {
-            error("error de sintaxis");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
 
@@ -214,7 +217,8 @@ public class Parser{
         }
         else
         {
-            error("Error de sintaxis");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
 
@@ -244,7 +248,8 @@ public class Parser{
         }
         else
         {
-            error("Error de Sintaxis");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
     
@@ -262,7 +267,8 @@ public class Parser{
         }
         else
         {
-            error("Error de Sintaxis");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }   
     }
 
@@ -324,7 +330,8 @@ public class Parser{
             casos();
             eat(Yylex.LLA_R);
         }else{
-            error("Error sintactico");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
 
@@ -362,7 +369,8 @@ public class Parser{
             eat(Yylex.DOSPUNTOS);
             instrucciones();
         } else{
-            error("Error de sintaxis");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
 
@@ -372,7 +380,8 @@ public class Parser{
             eat(Yylex.DOSPUNTOS);
             instrucciones();
         } else{
-            error("Error de sintaxis");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
 
@@ -383,7 +392,8 @@ public class Parser{
             comb();
             bool_1();
         } else{
-            error("Error de sintaxis");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }    
 
@@ -402,7 +412,8 @@ public class Parser{
             igualdad();
             comb_1();
         } else{
-            error("Error de sintaxis");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
 
@@ -420,7 +431,8 @@ public class Parser{
             rel();
             igualdad_2();
         } else{
-            error("Error de sintaxis");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
 
@@ -439,7 +451,8 @@ public class Parser{
             eat(Yylex.DIFERENTEDE);
             rel();
         } else{
-            error("Error de sintaxis");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
 
@@ -450,7 +463,8 @@ public class Parser{
             exp();
             rel_1();
         } else{
-            error("Error de sintaxis");
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }  
 
