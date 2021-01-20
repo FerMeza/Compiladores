@@ -56,7 +56,8 @@ public class Parser{
         if(actual.equals(i)){
             actual = lexer.yylex();
         }else{
-            error("Error de sintaxis");
+            error("Error de sintaxis en linea " + Integer.toString(actual.linea) + 
+            " en la columna " + Integer.toString(actual.columna) + " en " + actual);
         }
     }
     
@@ -256,7 +257,7 @@ public class Parser{
             actual.equals(Yylex.BREAK) || actual.equals(Yylex.LLA_L) ||
             actual.equals(Yylex.SWITCH) || actual.equals(Yylex.RETURN))
         {
-            //sentencia();
+            sentencia();
             instrucciones_1();
         }
         else
@@ -274,8 +275,198 @@ public class Parser{
             actual.equals(Yylex.BREAK) || actual.equals(Yylex.LLA_L) ||
             actual.equals(Yylex.SWITCH) || actual.equals(Yylex.RETURN))
         {
-            //sentencia();
+            sentencia();
             instrucciones_1();
+        }
+    }
+
+    //Mis funciones
+    void sentencia()throws IOException{
+        if(actual.equals(Yylex.IF)){
+            eat(Yylex.IF);
+            eat(Yylex.PAR_L);
+            bool();
+            eat(Yylex.PAR_R);
+            sentencia();
+            sentencia_1();
+        }else if(actual.equals(Yylex.ID)){
+            localizacion();
+            eat(Yylex.ASIGNACION);    // "="
+            bool();
+            eat(Yylex.PUNCOMA);
+        }else if(actual.equals(Yylex.WHILE)){
+            eat(Yylex.WHILE);
+            eat(Yylex.PAR_L);
+            bool();
+            eat(Yylex.PAR_R);
+            sentencia();
+        }else if(actual.equals(Yylex.DO)){
+            eat(Yylex.DO);
+            sentencia();
+            eat(Yylex.WHILE);
+            eat(Yylex.PAR_L);
+            bool();
+            eat(Yylex.PAR_R);
+        }else if(actual.equals(Yylex.BREAK)){
+            eat(Yylex.BREAK);
+            eat(Yylex.PUNCOMA);
+        }else if(actual.equals(Yylex.LLA_L)){
+            bloque();
+        }else if(actual.equals(Yylex.RETURN)){
+            eat(Yylex.RETURN);
+            sentencia_2();
+        }else if(actual.equals(Yylex.SWITCH)){
+            eat(Yylex.SWITCH);
+            eat(Yylex.PAR_L);
+            bool();
+            eat(Yylex.PAR_R);
+            eat(Yylex.LLA_L);
+            casos();
+            eat(Yylex.LLA_R);
+        }else{
+            error("Error sintactico");
+        }
+    }
+
+    void sentencia_1()throws IOException{
+        if(actual.equals(Yylex.ELSE)){
+            eat(Yylex.ELSE);
+            sentencia();
+        }
+    }
+
+    void sentencia_2()throws IOException{
+        if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) || actual.equals(Yylex.PAR_L) 
+        || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) 
+        || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
+            exp();
+            eat(Yylex.PUNCOMA);
+        }else if(actual.equals(Yylex.ID)){
+            eat(Yylex.PUNCOMA);
+        }
+    }
+
+    void casos()throws IOException{
+        if(actual.equals(Yylex.CASE)){
+            caso();
+            casos();
+        } else if(actual.equals(Yylex.DEFAULT)){
+            predeterminado();
+        }
+    }
+
+    void caso()throws IOException{
+        if(actual.equals(Yylex.CASE)){
+            eat(Yylex.CASE);
+            eat(Yylex.NUMEROS);
+            eat(Yylex.DOSPUNTOS);
+            instrucciones();
+        } else{
+            error("Error de sintaxis");
+        }
+    }
+
+    void predeterminado()throws IOException{
+        if(actual.equals(Yylex.DEFAULT)){
+            eat(Yylex.DEFAULT);
+            eat(Yylex.DOSPUNTOS);
+            instrucciones();
+        } else{
+            error("Error de sintaxis");
+        }
+    }
+
+    void bool()throws IOException{
+        if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) || actual.equals(Yylex.PAR_L) 
+        || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) 
+        || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
+            comb();
+            bool_1();
+        } else{
+            error("Error de sintaxis");
+        }
+    }    
+
+    void bool_1()throws IOException{
+        if(actual.equals(Yylex.OR)){
+            eat(Yylex.OR);
+            comb();
+            bool_1();
+        }
+    }    
+
+     void comb()throws IOException{
+        if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) || actual.equals(Yylex.PAR_L) 
+        || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) 
+        || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
+            igualdad();
+            comb_1();
+        } else{
+            error("Error de sintaxis");
+        }
+    }
+
+    void comb_1()throws IOException{
+        if(actual.equals(Yylex.AND)){
+            eat(Yylex.OR);
+            igualdad();
+        }
+    }    
+
+    void igualdad()throws IOException{
+        if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) || actual.equals(Yylex.PAR_L) 
+        || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) 
+        || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
+            rel();
+            igualdad_2();
+        } else{
+            error("Error de sintaxis");
+        }
+    }
+
+    void igualdad_2()throws IOException{
+        if( actual.equals(Yylex.COMPARACION) || actual.equals(Yylex.DIFERENTEDE) ){
+            igualdad_1();
+            igualdad_2();
+        }
+    }
+
+    void igualdad_1()throws IOException{
+        if( actual.equals(Yylex.COMPARACION)){
+            eat(Yylex.COMPARACION);
+            rel();
+        } else if(actual.equals(Yylex.DIFERENTEDE)){
+            eat(Yylex.DIFERENTEDE);
+            rel();
+        } else{
+            error("Error de sintaxis");
+        }
+    }
+
+    void rel()throws IOException{
+        if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) || actual.equals(Yylex.PAR_L) 
+        || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) 
+        || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
+            exp();
+            rel_1();
+        } else{
+            error("Error de sintaxis");
+        }
+    }  
+
+    void rel_1()throws IOException{
+        if(actual.equals(Yylex.MENOR)){
+            eat(Yylex.MENOR);
+            exp();
+        }else if(actual.equals(Yylex.MENORIGUAL)){
+            eat(Yylex.MENORIGUAL);
+            exp();
+        }else if(actual.equals(Yylex.MAYORIGUAL)){
+            eat(Yylex.MAYORIGUAL);
+            exp();
+        }else if(actual.equals(Yylex.MAYOR)){
+            eat(Yylex.MAYOR);
+            exp();
         }
     }
 

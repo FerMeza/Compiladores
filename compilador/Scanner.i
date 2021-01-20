@@ -49,16 +49,19 @@ package compilador;
     public static final int PUNCOMA = 138;
     public static final int COMA = 139;
     public static final int DOSPUNTOS = 140;
-    public static final int ID = 141;
     public static final int RETURN = 142;
     public static final int ASIGNACION = 143;
+    public static final int ELSE = 144;
+    public static final int ID = 141;
+
+
 
     public Token nextToken(String lex, int num){
-        return new Token(num, lex);
+        return new Token(num, lex, yyline, yycolumn);
     }
 
     public Token nextToken(String lex, int num, int type){
-        return new Token(num, lex, type);
+        return new Token(num, lex, type, yyline, yycolumn);
     }
 %}
 
@@ -123,6 +126,7 @@ comenMulti =  ("<*")([^"*"]|"*"[^>])*("*>")
 id = ({letras}|_) ({digito}| {letras}|_) *
 return = return
 asignacion = "="
+else = else
 errores = [^]
 
 /**********************Accion a realizar (retornar un numero) al encontrar un token, Hecho por 
@@ -162,7 +166,7 @@ errores = [^]
 {division} {return nextToken("", DIVISION);} /*Valor lex, tipo(division)*/
 {modulo} {return nextToken("", MODULO);} /*Valor lex, tipo(modulo)*/
 {negacion} {return nextToken("", NEGACION);} /*Valor lex, tipo(negado)*/
-{comparacion} {return nextToken("", COMPARACION);} /*Valor lex, tipo(igual)*/
+{comparacion} {return nextToken("", COMPARACION);} /*Valor lex, tipo(==)*/
 {diferentede} {return nextToken("", DIFERENTEDE);} /*Valor lex, tipo(diferente)*/
 {menor} {return nextToken("", MENOR);} /*Valor lex, tipo(menor)*/
 {menorigual} {return nextToken("", MENORIGUAL);} /*Valor lex, tipo(menorigual)*/
@@ -174,7 +178,8 @@ errores = [^]
 {coma} {return nextToken("", COMA);} /*Valor lex, tipo(coma)*/
 {dospuntos} {return nextToken("", DOSPUNTOS);} /*Valor lex, tipo(dospuntos)*/
 {return} {return nextToken("",RETURN);} /*Valor lex, tipo(RETURN)*/
-{asignacion} {return nextToken("", ASIGNACION);} /*Valor lex, tipo(IGUAL)*/
+{asignacion} {return nextToken("", ASIGNACION);} /*Valor lex, tipo(asignacion)*/
+{else} {return nextToken("", ELSE);}  /*Valor lex, tipo(else)*/
 {espacios} {} /*No hace nada, persona lectora de comentarios*/	
 {comenMulti} {}
 {comenLinea} {}	
