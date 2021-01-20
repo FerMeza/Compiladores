@@ -63,7 +63,7 @@ public class Parser{
 /*Funciones que definen a los no terminales*/
 	
       // FIRST(programa) = {ε, int, float, char, double, void, func} 
-     
+    /*programa → declaraciones funciones*/
      void programa()throws IOException{
      	if(actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT) || actual.equals(Yylex.CHAR) 
         || actual.equals(Yylex.DOUBLE) || actual.equals(Yylex.VOID) || actual.equals(Yylex.FUNC)){
@@ -73,6 +73,7 @@ public class Parser{
      }
      
      //FIRST(declaraciones) = {ε, int, float, char, double, void}
+     /* declaraciones → tipo lista_var ; declaraciones | ε */
      void declaraciones()throws IOException{
         if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
         || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
@@ -86,6 +87,7 @@ public class Parser{
      }
 
      //FIRST(tipo) = {int, float, char, double, void}
+     /*tipo → basico compuesto */
      void tipo()throws IOException{
         if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
         || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
@@ -100,6 +102,7 @@ public class Parser{
      }
 
     //FIRST(basico) = {int, float, char, double, void}
+    /*basico →  int | float | char | double | void  */
     void basico()throws IOException
     {
         if (actual.equals(Yylex.INT))
@@ -129,6 +132,7 @@ public class Parser{
     }
 
     //FIRST(compuesto) = {[, ε}
+    /*compuesto →[numero] compuesto | ε */
     void compuesto()throws IOException
     {
         if (actual.equals(Yylex.COR_L))
@@ -141,6 +145,7 @@ public class Parser{
     }
 
     //FIRST(lista_var) = {id}
+    /*lista_var  → id lista_var’ */
     void lista_var()throws IOException
     {
         if (actual.equals(Yylex.ID))
@@ -148,9 +153,14 @@ public class Parser{
             eat(Yylex.ID);
             lista_var_1();
         }
+        else
+        {
+            error("error de sintaxis");
+        }
     }
 
     //FIRST(lista_var’) = {”,” , ε}
+    /* sta_var’ → , id lista_var’ | ε*/
     void lista_var_1()throws IOException
     {
         if (actual.equals(Yylex.COMA))
@@ -162,11 +172,13 @@ public class Parser{
     }
 
     //FIRST(funciones) = {func, ε}
+    /*funciones  → func tipo id ( argumentos ) bloque funciones | ε */
     void funciones()throws IOException
     {
         if (actual.equals(Yylex.FUNC))
         {
             eat(Yylex.FUNC);
+            tipo();
             eat(Yylex.ID);
             eat(Yylex.PAR_L);
             argumentos();
@@ -177,6 +189,7 @@ public class Parser{
     }
 
     //FIRST (argumentos) = {int, float, char, double, void, ε}
+    /* argumentos  → lista_args | ε*/
     void argumentos()throws IOException
     {
         if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
@@ -188,6 +201,7 @@ public class Parser{
     }
 
     //FIRST(lista_args) = {int, float, char, double, void}
+    /*lista_args →tipo id lista_args’  */
     void lista_args()throws IOException
     {
         if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
@@ -195,7 +209,7 @@ public class Parser{
         || actual.equals(Yylex.VOID)){
             tipo();
             eat(Yylex.ID);
-            lista_var_1();
+            lista_args_1();
         }
         else
         {
@@ -204,17 +218,20 @@ public class Parser{
     }
 
     // FIRST(lista_args’) = {”,” , ε}
+    /*lista_args’→ ,tipo id lista_args’ | ε */
     void lista_args_1()throws IOException
     {
         if (actual.equals(Yylex.COMA))
         {
             eat(Yylex.COMA);
+            tipo();
             eat(Yylex.ID);
-            lista_var_1();
+            lista_args_1();
         }
     }
 
     //FIRST(bloque) = {“{”}
+    /*bloque  → { declaraciones instrucciones } */
     void bloque()throws IOException
     {
         if (actual.equals(Yylex.LLA_L))
@@ -230,12 +247,14 @@ public class Parser{
         }
     }
     
-    //FIRST(instrucciones) = {if, id, while, do, break, “{”, switch}
+    //FIRST(instrucciones) = {if, id, while, do, break, “{”, switch, return}
+    /*instrucciones → sentencia instrucciones’ */
     void instrucciones()throws IOException
     {
         if (actual.equals(Yylex.IF) || actual.equals(Yylex.ID) ||
             actual.equals(Yylex.WHILE) || actual.equals(Yylex.DO) ||
-            actual.equals(Yylex.BREAK) || actual.equals(Yylex.LLA_L))
+            actual.equals(Yylex.BREAK) || actual.equals(Yylex.LLA_L) ||
+            actual.equals(Yylex.SWITCH) || actual.equals(Yylex.RETURN))
         {
             //sentencia();
             instrucciones_1();
@@ -246,12 +265,14 @@ public class Parser{
         }   
     }
 
-    //FIRST(instrucciones’) = {if, id, while, do, break, “{”, switch, ε}
+    //FIRST(instrucciones’) = {if, id, while, do, break, “{”, switch,return,  ε}
+    /* instrucciones’ → sentencia instrucciones’ | ε*/
     void instrucciones_1()throws IOException
     {
         if (actual.equals(Yylex.IF) || actual.equals(Yylex.ID) ||
             actual.equals(Yylex.WHILE) || actual.equals(Yylex.DO) ||
-            actual.equals(Yylex.BREAK) || actual.equals(Yylex.LLA_L))
+            actual.equals(Yylex.BREAK) || actual.equals(Yylex.LLA_L) ||
+            actual.equals(Yylex.SWITCH) || actual.equals(Yylex.RETURN))
         {
             //sentencia();
             instrucciones_1();
@@ -263,6 +284,7 @@ public class Parser{
         System.out.println(msg);
     }
 
+    //Para buscar si el id se encuentra en la tabla de simbolos
     boolean buscar(String id){
         for(Symbol s: tablaSimbolos){
             if(s.id.equals(id)){
@@ -272,6 +294,7 @@ public class Parser{
         return false;
     }
 
+    //Retorna el tamaño de un tipo en la tabla de tipos
     int getTam(int id){
         for(Type t : tablaTipos){
             if(id== t.id){
@@ -281,7 +304,7 @@ public class Parser{
         return -1;
     }
 
-
+    //Para imprimir la tabla de tipos
     void printTT(){
         System.out.println("Tabla de tipos");
         for(Type t : tablaTipos){
@@ -289,6 +312,7 @@ public class Parser{
         }    
     }
 
+    //Para imprimir la tabla de simbolos
     void printTS(){
         System.out.println("Tabla de símbolos");
         int i=0;

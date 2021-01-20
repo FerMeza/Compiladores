@@ -50,6 +50,7 @@ package compilador;
     public static final int COMA = 139;
     public static final int DOSPUNTOS = 140;
     public static final int ID = 141;
+    public static final int RETURN = 142;
 
     public Token nextToken(String lex, int num){
         return new Token(num, lex);
@@ -118,10 +119,8 @@ coma = ","
 dospuntos = ":"
 comenLinea = --[^\n]*\n
 comenMulti =  ("<*")([^"*"]|"*"[^>])*("*>") 
-
-( (\") ( [^(\")\n]  | \\(\") )* (\") |  (\')([^(\')])*(\') )
-
 id = ({letras}|_) ({digito}| {letras}|_) *
+return = return
 
 /**********************Accion a realizar (retornar un numero) al encontrar un token, Hecho por 
 											Aguilar Paulina, Aviles Bryan y Meza Ortega Fernando 15 Noviembre 2020 ***************************/
@@ -176,4 +175,5 @@ puncoma {return nextToken("", PUNCOMA);} /*Valor lex, tipo(puntoycoma)*/
 coma {return nextToken("", COMA);} /*Valor lex, tipo(coma)*/
 dospuntos {return nextToken("", DOSPUNTOS);} /*Valor lex, tipo(dospuntos)*/
 id {return nextToken(yytext(), ID);} /*Valor lex, tipo(id)*/
+return {return nextToken("",RETURN);} /*Valor lex, tipo(RETURN)*/
 .   {System.out.println("Error");}
