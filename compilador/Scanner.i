@@ -32,18 +32,18 @@ package compilador;
     public static final int COR_R = 121;
     public static final int LLA_L = 122;
     public static final int LLA_R = 123;
-    public static final int ADD_OP1 = 124;
-    public static final int ADD_OP2 = 125;
-    public static final int MUL_OP1 = 126;
-    public static final int MUL_OP2 = 127;
-    public static final int MUL_OP3 = 128;
-    public static final int UNARY_OP1 = 129;
-    public static final int REL_OP_1 = 130;
-    public static final int REL_OP_2 = 131;
-    public static final int REL_OP_3 = 132;
-    public static final int REL_OP_4 = 133;
-    public static final int REL_OP_5 = 134;
-    public static final int REL_OP_6 = 135;
+    public static final int MAS = 124;
+    public static final int MENOS = 125;
+    public static final int ASTERISCO = 126;
+    public static final int DIVISION = 127;
+    public static final int MODULO = 128;
+    public static final int NEGACION = 129;
+    public static final int COMPARACION = 130;
+    public static final int DIFERENTEDE = 131;
+    public static final int MENOR = 132;
+    public static final int MENORIGUAL = 133;
+    public static final int MAYOR = 134;
+    public static final int MAYORIGUAL = 135;
     public static final int OR = 136;
     public static final int AND = 137;
     public static final int PUNCOMA = 138;
@@ -51,7 +51,7 @@ package compilador;
     public static final int DOSPUNTOS = 140;
     public static final int ID = 141;
     public static final int RETURN = 142;
-    public static final int IGUAL = 143;
+    public static final int ASIGNACION = 143;
 
     public Token nextToken(String lex, int num){
         return new Token(num, lex);
@@ -101,18 +101,18 @@ cor_L = "["
 cor_R = "]"
 lla_L = "{"
 lla_R = "}"
-add_op1  = "+"
-add_op2  = "-"
-mul_op1 = "*"
-mul_op2 = "/"
-mul_op3 = "%"
-unary_op1 = "!"
-rel_op_1 = "=="
-rel_op_2 = "!="
-rel_op_3 = "<"
-rel_op_4 = "<="
-rel_op_5 = ">"
-rel_op_6 = ">="
+mas  = "+"
+menos  = "-"
+asterisco = "*"
+division = "/"
+modulo = "%"
+negacion = "!"
+comparacion = "=="
+diferentede = "!="
+menor = "<"
+menorigual = "<="
+mayor = ">"
+mayorigual = ">="
 or = "||"
 and = "&&"
 puncoma = ";"
@@ -122,7 +122,7 @@ comenLinea = --[^\n]*\n
 comenMulti =  ("<*")([^"*"]|"*"[^>])*("*>") 
 id = ({letras}|_) ({digito}| {letras}|_) *
 return = return
-igual = "="
+asignacion = "="
 errores = [^]
 
 /**********************Accion a realizar (retornar un numero) al encontrar un token, Hecho por 
@@ -156,26 +156,25 @@ errores = [^]
 {cor_R} {return nextToken("", COR_R);} /*Valor lex, tipo(])*/
 {lla_L} {return nextToken("", LLA_L);} /*Valor lex, tipo({)*/
 {lla_R} {return nextToken("", LLA_R);} /*Valor lex, tipo(})*/
-{add_op1} {return nextToken("", ADD_OP1);} /*Valor lex, tipo(mas)*/
-{add_op2} {return nextToken("", ADD_OP2);} /*Valor lex, tipo(menos)*/
-
-{mul_op1} {return nextToken("", MUL_OP1);} /*Valor lex, tipo(multip)*/
-{mul_op2} {return nextToken("", MUL_OP2);} /*Valor lex, tipo(division)*/
-{mul_op3} {return nextToken("", MUL_OP3);} /*Valor lex, tipo(modulo)*/
-{unary_op1} {return nextToken("", UNARY_OP1);} /*Valor lex, tipo(negado)*/
-{rel_op_1} {return nextToken("", REL_OP_1);} /*Valor lex, tipo(igual)*/
-{rel_op_2} {return nextToken("", REL_OP_2);} /*Valor lex, tipo(diferente)*/
-{rel_op_3} {return nextToken("", REL_OP_3);} /*Valor lex, tipo(menor)*/
-{rel_op_4} {return nextToken("", REL_OP_4);} /*Valor lex, tipo(menorigual)*/
-{rel_op_5} {return nextToken("", REL_OP_5);} /*Valor lex, tipo(mayor)*/
-{rel_op_6} {return nextToken("", REL_OP_6);} /*Valor lex, tipo(mayorigual)*/
+{mas} {return nextToken("", MAS);} /*Valor lex, tipo(mas)*/
+{menos} {return nextToken("", MENOS);} /*Valor lex, tipo(menos)*/
+{asterisco} {return nextToken("", ASTERISCO);} /*Valor lex, tipo(multip)*/
+{division} {return nextToken("", DIVISION);} /*Valor lex, tipo(division)*/
+{modulo} {return nextToken("", MODULO);} /*Valor lex, tipo(modulo)*/
+{negacion} {return nextToken("", NEGACION);} /*Valor lex, tipo(negado)*/
+{comparacion} {return nextToken("", COMPARACION);} /*Valor lex, tipo(igual)*/
+{diferentede} {return nextToken("", DIFERENTEDE);} /*Valor lex, tipo(diferente)*/
+{menor} {return nextToken("", MENOR);} /*Valor lex, tipo(menor)*/
+{menorigual} {return nextToken("", MENORIGUAL);} /*Valor lex, tipo(menorigual)*/
+{mayor} {return nextToken("", MAYOR);} /*Valor lex, tipo(mayor)*/
+{mayorigual} {return nextToken("", MAYORIGUAL);} /*Valor lex, tipo(mayorigual)*/
 {or} {return nextToken("", OR);} /*Valor lex, tipo(||)*/
 {and} {return nextToken("", AND);} /*Valor lex, tipo(&&)*/
 {puncoma} {return nextToken("", PUNCOMA);} /*Valor lex, tipo(puntoycoma)*/
 {coma} {return nextToken("", COMA);} /*Valor lex, tipo(coma)*/
 {dospuntos} {return nextToken("", DOSPUNTOS);} /*Valor lex, tipo(dospuntos)*/
 {return} {return nextToken("",RETURN);} /*Valor lex, tipo(RETURN)*/
-{igual} {return nextToken("", IGUAL);} /*Valor lex, tipo(IGUAL)*/
+{asignacion} {return nextToken("", ASIGNACION);} /*Valor lex, tipo(IGUAL)*/
 {espacios} {} /*No hace nada, persona lectora de comentarios*/	
 {comenMulti} {}
 {comenLinea} {}	

@@ -396,18 +396,18 @@ class Yylex {
     public static final int COR_R = 121;
     public static final int LLA_L = 122;
     public static final int LLA_R = 123;
-    public static final int ADD_OP1 = 124;
-    public static final int ADD_OP2 = 125;
-    public static final int MUL_OP1 = 126;
-    public static final int MUL_OP2 = 127;
-    public static final int MUL_OP3 = 128;
-    public static final int UNARY_OP1 = 129;
-    public static final int REL_OP_1 = 130;
-    public static final int REL_OP_2 = 131;
-    public static final int REL_OP_3 = 132;
-    public static final int REL_OP_4 = 133;
-    public static final int REL_OP_5 = 134;
-    public static final int REL_OP_6 = 135;
+    public static final int MAS = 124;
+    public static final int MENOS = 125;
+    public static final int ASTERISCO = 126;
+    public static final int DIVISION = 127;
+    public static final int MODULO = 128;
+    public static final int NEGACION = 129;
+    public static final int COMPARACION = 130;
+    public static final int NCOMPARACION = 131;
+    public static final int MENOR = 132;
+    public static final int MENORIGUAL = 133;
+    public static final int MAYOR = 134;
+    public static final int MAYORIGUAL = 135;
     public static final int OR = 136;
     public static final int AND = 137;
     public static final int PUNCOMA = 138;
@@ -415,7 +415,7 @@ class Yylex {
     public static final int DOSPUNTOS = 140;
     public static final int ID = 141;
     public static final int RETURN = 142;
-    public static final int IGUAL = 143;
+    public static final int ASIGNACION = 143;
 
     public Token nextToken(String lex, int num){
         return new Token(num, lex);
@@ -830,12 +830,12 @@ class Yylex {
             // fall through
           case 48: break;
           case 3:
-            { return nextToken("", UNARY_OP1);
+            { return nextToken("", NEGACION);
             }
             // fall through
           case 49: break;
           case 4:
-            { return nextToken("", MUL_OP3);
+            { return nextToken("", MODULO);
             }
             // fall through
           case 50: break;
@@ -850,12 +850,12 @@ class Yylex {
             // fall through
           case 52: break;
           case 7:
-            { return nextToken("", MUL_OP1);
+            { return nextToken("", ASTERISCO);
             }
             // fall through
           case 53: break;
           case 8:
-            { return nextToken("", ADD_OP1);
+            { return nextToken("", MAS);
             }
             // fall through
           case 54: break;
@@ -865,12 +865,12 @@ class Yylex {
             // fall through
           case 55: break;
           case 10:
-            { return nextToken("", ADD_OP2);
+            { return nextToken("", MENOS);
             }
             // fall through
           case 56: break;
           case 11:
-            { return nextToken("", MUL_OP2);
+            { return nextToken("", DIVISION);
             }
             // fall through
           case 57: break;
@@ -890,17 +890,17 @@ class Yylex {
             // fall through
           case 60: break;
           case 15:
-            { return nextToken("", REL_OP_3);
+            { return nextToken("", MENOR);
             }
             // fall through
           case 61: break;
           case 16:
-            { return nextToken("", IGUAL);
+            { return nextToken("", ASIGNACION);
             }
             // fall through
           case 62: break;
           case 17:
-            { return nextToken("", REL_OP_5);
+            { return nextToken("", MAYOR);
             }
             // fall through
           case 63: break;
@@ -930,7 +930,7 @@ class Yylex {
             // fall through
           case 68: break;
           case 23:
-            { return nextToken("", REL_OP_2);
+            { return nextToken("", NCOMPARACION);
             }
             // fall through
           case 69: break;
@@ -950,17 +950,17 @@ class Yylex {
             // fall through
           case 72: break;
           case 27:
-            { return nextToken("", REL_OP_4);
+            { return nextToken("", MENORIGUAL);
             }
             // fall through
           case 73: break;
           case 28:
-            { return nextToken("", REL_OP_1);
+            { return nextToken("", COMPARACION);
             }
             // fall through
           case 74: break;
           case 29:
-            { return nextToken("", REL_OP_6);
+            { return nextToken("", MAYORIGUAL);
             }
             // fall through
           case 75: break;
