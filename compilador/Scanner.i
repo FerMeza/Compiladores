@@ -51,6 +51,7 @@ package compilador;
     public static final int DOSPUNTOS = 140;
     public static final int ID = 141;
     public static final int RETURN = 142;
+    public static final int IGUAL = 143;
 
     public Token nextToken(String lex, int num){
         return new Token(num, lex);
@@ -121,6 +122,8 @@ comenLinea = --[^\n]*\n
 comenMulti =  ("<*")([^"*"]|"*"[^>])*("*>") 
 id = ({letras}|_) ({digito}| {letras}|_) *
 return = return
+igual = "="
+errores = [^]
 
 /**********************Accion a realizar (retornar un numero) al encontrar un token, Hecho por 
 											Aguilar Paulina, Aviles Bryan y Meza Ortega Fernando 15 Noviembre 2020 ***************************/
@@ -128,52 +131,53 @@ return = return
 
 %%
 
-espacios {} /*No hace nada, persona lectora de comentarios*/	
-comentmulti {}
-comentario {}	
-numeros {return nextToken(yytext(), NUMEROS, 0);} /*Valor lex, tipo(numero), subtipo(entero)*/
-decex {return nextToken(yytext(), DECEX, 1);} /*Valor lex, tipo(numero), subtipo(double)*/
-cadenas {return nextToken(yytext(), CADENAS);} /*Valor lex, tipo(cadena)*/
-true {return nextToken("", TRUE);} /*Valor lex, tipo(true)*/
-false {return nextToken("", FALSE);} /*Valor lex, tipo(false)*/
-int {return nextToken("", INT);} /*Valor lex, tipo(int)*/
-float {return nextToken("", FLOAT);} /*Valor lex, tipo(float)*/
-char {return nextToken("", CHAR);} /*Valor lex, tipo(char)*/
-double {return nextToken("", DOUBLE);} /*Valor lex, tipo(void)*/
-void {return nextToken("", VOID);} /*Valor lex, tipo(void)*/
-if {return nextToken("", IF);} /*Valor lex, tipo(if)*/
-while {return nextToken("", WHILE);} /*Valor lex, tipo(while)*/
-do {return nextToken("", DO);} /*Valor lex, tipo(do)*/
-break {return nextToken("", BREAK);} /*Valor lex, tipo(break)*/
-switch {return nextToken("", SWITCH);} /*Valor lex, tipo(switch)*/
-case {return nextToken("", CASE);} /*Valor lex, tipo(case)*/
-func {return nextToken("", FUNC);} /*Valor lex, tipo(func)*/
-default {return nextToken("", DEFAULT);} /*Valor lex, tipo(default)*/
+{numeros} {return nextToken(yytext(), NUMEROS, 0);} /*Valor lex, tipo(numero), subtipo(entero)*/
+{decex} {return nextToken(yytext(), DECEX, 1);} /*Valor lex, tipo(numero), subtipo(double)*/
+{cadenas} {return nextToken(yytext(), CADENAS);} /*Valor lex, tipo(cadena)*/
+{true} {return nextToken("", TRUE);} /*Valor lex, tipo(true)*/
+{false} {return nextToken("", FALSE);} /*Valor lex, tipo(false)*/
+{int} {return nextToken("", INT);} /*Valor lex, tipo(int)*/
+{float} {return nextToken("", FLOAT);} /*Valor lex, tipo(float)*/
+{char} {return nextToken("", CHAR);} /*Valor lex, tipo(char)*/
+{double} {return nextToken("", DOUBLE);} /*Valor lex, tipo(void)*/
+{void} {return nextToken("", VOID);} /*Valor lex, tipo(void)*/
+{if} {return nextToken("", IF);} /*Valor lex, tipo(if)*/
+{while} {return nextToken("", WHILE);} /*Valor lex, tipo(while)*/
+{do} {return nextToken("", DO);} /*Valor lex, tipo(do)*/
+{break} {return nextToken("", BREAK);} /*Valor lex, tipo(break)*/
+{switch} {return nextToken("", SWITCH);} /*Valor lex, tipo(switch)*/
+{case} {return nextToken("", CASE);} /*Valor lex, tipo(case)*/
+{func} {return nextToken("", FUNC);} /*Valor lex, tipo(func)*/
+{default} {return nextToken("", DEFAULT);} /*Valor lex, tipo(default)*/
 
-par_L {return nextToken("", PAR_L);} /*Valor lex, tipo("(")*/
-par_R {return nextToken("", PAR_R);} /*Valor lex, tipo(")")*/
-cor_L {return nextToken("", COR_L);} /*Valor lex, tipo([)*/
-cor_R {return nextToken("", COR_R);} /*Valor lex, tipo(])*/
-lla_L {return nextToken("", LLA_L);} /*Valor lex, tipo({)*/
-lla_R {return nextToken("", LLA_R);} /*Valor lex, tipo(})*/
-add_op1 {return nextToken("", ADD_OP1);} /*Valor lex, tipo(mas)*/
-add_op2 {return nextToken("", ADD_OP2);} /*Valor lex, tipo(menos)*/
+{par_L} {return nextToken("", PAR_L);} /*Valor lex, tipo("(")*/
+{par_R} {return nextToken("", PAR_R);} /*Valor lex, tipo(")")*/
+{cor_L} {return nextToken("", COR_L);} /*Valor lex, tipo([)*/
+{cor_R} {return nextToken("", COR_R);} /*Valor lex, tipo(])*/
+{lla_L} {return nextToken("", LLA_L);} /*Valor lex, tipo({)*/
+{lla_R} {return nextToken("", LLA_R);} /*Valor lex, tipo(})*/
+{add_op1} {return nextToken("", ADD_OP1);} /*Valor lex, tipo(mas)*/
+{add_op2} {return nextToken("", ADD_OP2);} /*Valor lex, tipo(menos)*/
 
-mul_op1 {return nextToken("", MUL_OP1);} /*Valor lex, tipo(multip)*/
-mul_op2 {return nextToken("", MUL_OP2);} /*Valor lex, tipo(division)*/
-mul_op3 {return nextToken("", MUL_OP3);} /*Valor lex, tipo(modulo)*/
-unary_op1 {return nextToken("", UNARY_OP1);} /*Valor lex, tipo(negado)*/
-rel_op_1 {return nextToken("", REL_OP_1);} /*Valor lex, tipo(igual)*/
-rel_op_2 {return nextToken("", REL_OP_2);} /*Valor lex, tipo(diferente)*/
-rel_op_3 {return nextToken("", REL_OP_3);} /*Valor lex, tipo(menor)*/
-rel_op_4 {return nextToken("", REL_OP_4);} /*Valor lex, tipo(menorigual)*/
-rel_op_5 {return nextToken("", REL_OP_5);} /*Valor lex, tipo(mayor)*/
-rel_op_6 {return nextToken("", REL_OP_6);} /*Valor lex, tipo(mayorigual)*/
-or {return nextToken("", OR);} /*Valor lex, tipo(||)*/
-and {return nextToken("", AND);} /*Valor lex, tipo(&&)*/
-puncoma {return nextToken("", PUNCOMA);} /*Valor lex, tipo(puntoycoma)*/
-coma {return nextToken("", COMA);} /*Valor lex, tipo(coma)*/
-dospuntos {return nextToken("", DOSPUNTOS);} /*Valor lex, tipo(dospuntos)*/
-id {return nextToken(yytext(), ID);} /*Valor lex, tipo(id)*/
-return {return nextToken("",RETURN);} /*Valor lex, tipo(RETURN)*/
-.   {System.out.println("Error");}
+{mul_op1} {return nextToken("", MUL_OP1);} /*Valor lex, tipo(multip)*/
+{mul_op2} {return nextToken("", MUL_OP2);} /*Valor lex, tipo(division)*/
+{mul_op3} {return nextToken("", MUL_OP3);} /*Valor lex, tipo(modulo)*/
+{unary_op1} {return nextToken("", UNARY_OP1);} /*Valor lex, tipo(negado)*/
+{rel_op_1} {return nextToken("", REL_OP_1);} /*Valor lex, tipo(igual)*/
+{rel_op_2} {return nextToken("", REL_OP_2);} /*Valor lex, tipo(diferente)*/
+{rel_op_3} {return nextToken("", REL_OP_3);} /*Valor lex, tipo(menor)*/
+{rel_op_4} {return nextToken("", REL_OP_4);} /*Valor lex, tipo(menorigual)*/
+{rel_op_5} {return nextToken("", REL_OP_5);} /*Valor lex, tipo(mayor)*/
+{rel_op_6} {return nextToken("", REL_OP_6);} /*Valor lex, tipo(mayorigual)*/
+{or} {return nextToken("", OR);} /*Valor lex, tipo(||)*/
+{and} {return nextToken("", AND);} /*Valor lex, tipo(&&)*/
+{puncoma} {return nextToken("", PUNCOMA);} /*Valor lex, tipo(puntoycoma)*/
+{coma} {return nextToken("", COMA);} /*Valor lex, tipo(coma)*/
+{dospuntos} {return nextToken("", DOSPUNTOS);} /*Valor lex, tipo(dospuntos)*/
+{return} {return nextToken("",RETURN);} /*Valor lex, tipo(RETURN)*/
+{igual} {return nextToken("", IGUAL);} /*Valor lex, tipo(IGUAL)*/
+{espacios} {} /*No hace nada, persona lectora de comentarios*/	
+{comenMulti} {}
+{comenLinea} {}	
+{id} {return nextToken(yytext(), ID);} /*Valor lex, tipo(id)*/
+{errores}   {System.out.println("Error");}
