@@ -484,6 +484,163 @@ public class Parser{
         }
     }
 
+    void exp()throws IOException{
+        if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) ||actual.equals(Yylex.PAR_L) || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
+            term();
+            exp_2();
+        } else{
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+        }
+    }  
+
+
+    void exp_2()throws IOException{
+    if( actual.equals(Yylex.MAS) || actual.equals(Yylex.MENOS) ){
+        exp_1();
+        exp_2();
+        }
+    }
+
+    void exp_1()throws IOException{
+            if( actual.equals(Yylex.MAS)){
+                eat(Yylex.MAS);
+                term();
+            } else if(actual.equals(Yylex.MENOS)){
+                eat(Yylex.MENOS);
+                term();
+            } else{
+                error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+                " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+            }
+    }
+
+    void term()throws IOException{
+            if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) || actual.equals(Yylex.PAR_L)  || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
+                unario();
+                term_2();
+            } else{
+                error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+                " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+            }
+    }  
+
+
+    void term_2()throws IOException{
+    if( actual.equals(Yylex.ASTERISCO) || actual.equals(Yylex.DIVISION) || actual.equals(Yylex.MODULO)){
+        term_1();
+        term_2();
+        }
+        
+    }
+
+
+    void term_1()throws IOException{
+            if( actual.equals(Yylex.ASTERISCO)){
+                eat(Yylex.ASTERISCO);
+                unario();
+            } else if(actual.equals(Yylex.DIVISION)){
+                eat(Yylex.DIVISION);
+                unario();
+            } else if(actual.equals(Yylex.MODULO)){
+                eat(Yylex.MODULO);
+                unario();
+            } else{
+                error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+                " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+            }
+    }
+
+
+
+    void unario()throws IOException{
+            if( actual.equals(Yylex.NEGACION)){
+                eat(Yylex.NEGACION);
+                unario();
+            } else if(actual.equals(Yylex.MENOS)){
+                eat(Yylex.MENOS);
+                unario();
+            } else if(actual.equals(Yylex.PAR_L)  || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
+                factor();
+            } else{
+                error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+                " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+            }
+    }
+
+    void factor()throws IOException{
+            if( actual.equals(Yylex.PAR_L)){
+                eat(Yylex.PAR_L);
+                bool();
+                eat(Yylex.PAR_R);
+            } else if(actual.equals(Yylex.NUMEROS)){
+                eat(Yylex.NUMEROS);
+            } else if(actual.equals(Yylex.ID) ){
+                localizacion();
+            } else if(actual.equals(Yylex.CADENAS)){
+                eat(Yylex.CADENAS);
+            } else if(actual.equals(Yylex.TRUE)){
+                eat(Yylex.TRUE);
+            } else if(actual.equals(Yylex.FALSE)){
+                eat(Yylex.FALSE);
+            } else if(actual.equals(Yylex.ID)){
+                eat(Yylex.ID);
+                eat(Yylex.PAR_L);
+                parametros();
+                eat(Yylex.PAR_R);
+            } else{
+                error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+                " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+            }
+    }
+
+
+    void parametros()throws IOException{
+            if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) ||actual.equals(Yylex.PAR_L) || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
+                lista_param();
+                
+            } 
+        }  
+        
+    void lista_param()throws IOException{
+    if( actual.equals(Yylex.OR)){
+            bool();
+                lista_param_1();
+                
+            } else{
+                error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+                " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+            }
+        }  
+
+    void lista_param_1()throws IOException{
+        if( actual.equals(Yylex.COMA)){
+                eat(Yylex.COMA);
+                bool();
+                lista_param_1();
+            } 
+    }
+    
+    void localizacion()throws IOException{
+        if( actual.equals(Yylex.ID)){
+                eat(Yylex.ID);
+                localizacion_1();
+            } else{
+                error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+                " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+            }
+    }
+
+    void localizacion_1()throws IOException{
+    if( actual.equals(Yylex.COR_L)){
+                eat(Yylex.COR_L);
+                bool();
+                eat(Yylex.COR_R);
+                localizacion_1();
+            }
+
+    }
+
     /*Para imprimir msg de error */
     void error(String msg){
         System.out.println(msg);
