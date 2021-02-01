@@ -68,9 +68,11 @@ public class Parser{
      void programa()throws IOException{
      	if(actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT) || actual.equals(Yylex.CHAR) 
         || actual.equals(Yylex.DOUBLE) || actual.equals(Yylex.VOID) || actual.equals(Yylex.FUNC)){
-     		declaraciones();
+     				declaraciones();
             funciones();
         }
+        
+       
      }
      
      //FIRST(declaraciones) = {ε, int, float, char, double, void}
@@ -78,12 +80,11 @@ public class Parser{
      void declaraciones()throws IOException{
         if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
         || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
-        || actual.equals(Yylex.VOID))
-        {
-    	tipo();
-        lista_var();
-        eat(Yylex.PUNCOMA);
-        declaraciones();
+        || actual.equals(Yylex.VOID)) {
+        	tipo();
+            lista_var();
+            eat(Yylex.PUNCOMA);
+            declaraciones();
         }
      }
 
@@ -96,8 +97,7 @@ public class Parser{
             basico();
             compuesto();
         }
-        else
-        {
+        else{
             error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
             " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
@@ -164,7 +164,7 @@ public class Parser{
     }
 
     //FIRST(lista_var’) = {”,” , ε}
-    /* sta_var’ → , id lista_var’ | ε*/
+    /* lista_var’ → , id lista_var’ | ε*/
     void lista_var_1()throws IOException
     {
         if (actual.equals(Yylex.COMA))
@@ -253,14 +253,15 @@ public class Parser{
         }
     }
     
-    //FIRST(instrucciones) = {if, id, while, do, break, “{”, switch, return}
+    //FIRST(instrucciones) = {if, while, do, break, ‘{’, return, switch, print, scan, id} 
     /*instrucciones → sentencia instrucciones’ */
     void instrucciones()throws IOException
     {
         if (actual.equals(Yylex.IF) || actual.equals(Yylex.ID) ||
             actual.equals(Yylex.WHILE) || actual.equals(Yylex.DO) ||
             actual.equals(Yylex.BREAK) || actual.equals(Yylex.LLA_L) ||
-            actual.equals(Yylex.SWITCH) || actual.equals(Yylex.RETURN))
+            actual.equals(Yylex.SWITCH) || actual.equals(Yylex.RETURN) ||
+            actual.equals(Yylex.PRINT) || actual.equals(Yylex.SCAN))
         {
             sentencia();
             instrucciones_1();
@@ -272,34 +273,35 @@ public class Parser{
         }   
     }
 
-    //FIRST(instrucciones’) = {if, id, while, do, break, “{”, switch,return,  ε}
+    //FIRST(instrucciones’) ={if, while, do, break, ‘{’, return, switch, print, scan, id,ε }
     /* instrucciones’ → sentencia instrucciones’ | ε*/
     void instrucciones_1()throws IOException
     {
         if (actual.equals(Yylex.IF) || actual.equals(Yylex.ID) ||
             actual.equals(Yylex.WHILE) || actual.equals(Yylex.DO) ||
             actual.equals(Yylex.BREAK) || actual.equals(Yylex.LLA_L) ||
-            actual.equals(Yylex.SWITCH) || actual.equals(Yylex.RETURN))
+            actual.equals(Yylex.SWITCH) || actual.equals(Yylex.RETURN) ||
+            actual.equals(Yylex.PRINT) || actual.equals(Yylex.SCAN))
         {
             sentencia();
             instrucciones_1();
         }
     }
 
-    //Mis funciones
+    //FIRST(sentencia) = {if, while, do, break, ‘{’, return, switch, print, scan, id }
     void sentencia()throws IOException{
-        if(actual.equals(Yylex.IF)){
+        if(actual.equals(Yylex.ID)){
+            parte_izquierda();
+            eat(Yylex.ASIGNACION);    // "="
+            bool();
+            eat(Yylex.PUNCOMA);
+        } else if(actual.equals(Yylex.IF)){
             eat(Yylex.IF);
             eat(Yylex.PAR_L);
             bool();
             eat(Yylex.PAR_R);
             sentencia();
             sentencia_1();
-        }else if(actual.equals(Yylex.ID)){
-            localizacion();
-            eat(Yylex.ASIGNACION);    // "="
-            bool();
-            eat(Yylex.PUNCOMA);
         }else if(actual.equals(Yylex.WHILE)){
             eat(Yylex.WHILE);
             eat(Yylex.PAR_L);
@@ -329,12 +331,21 @@ public class Parser{
             eat(Yylex.LLA_L);
             casos();
             eat(Yylex.LLA_R);
+        }else if(actual.equals(Yylex.PRINT)){
+            eat(Yylex.PRINT);
+            exp();
+            eat(Yylex.PUNCOMA);
+        }else if(actual.equals(Yylex.SCAN)){
+            eat(Yylex.SCAN);
+            parte_izquierda();
+            eat(Yylex.PUNCOMA);
         }else{
             error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
             " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
 
+    //FIRST(sentencia’) = {else, ε}
     void sentencia_1()throws IOException{
         if(actual.equals(Yylex.ELSE)){
             eat(Yylex.ELSE);
@@ -342,14 +353,18 @@ public class Parser{
         }
     }
 
+    //FIRST(sentencia’’) = {‘;’, !, -, id, ‘(’, numero, cadena, true, false} 
     void sentencia_2()throws IOException{
         if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) || actual.equals(Yylex.PAR_L) 
         || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) 
         || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
             exp();
             eat(Yylex.PUNCOMA);
-        }else if(actual.equals(Yylex.ID)){
+        }else if(actual.equals(Yylex.PUNCOMA)){
             eat(Yylex.PUNCOMA);
+        }else{
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
 
@@ -382,6 +397,22 @@ public class Parser{
         } else{
             error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
             " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+        }
+    }
+
+    void parte_izquierda()throws IOException{
+        if(actual.equals(Yylex.ID)){
+           eat(Yylex.ID);
+           parte_izquierda_1();
+        } else{
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+        }
+    }
+
+     void parte_izquierda_1()throws IOException{
+        if(actual.equals(Yylex.COR_L)){
+           localizacion();
         }
     }
 
@@ -419,8 +450,9 @@ public class Parser{
 
     void comb_1()throws IOException{
         if(actual.equals(Yylex.AND)){
-            eat(Yylex.OR);
+            eat(Yylex.AND);
             igualdad();
+            comb_1();
         }
     }    
 
@@ -484,8 +516,11 @@ public class Parser{
         }
     }
 
-    void exp()throws IOException{
-        if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) ||actual.equals(Yylex.PAR_L) || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
+    void exp() throws IOException{
+        if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) ||
+            actual.equals(Yylex.PAR_L) || actual.equals(Yylex.NUMEROS) || 
+            actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || 
+            actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
             term();
             exp_2();
         } else{
@@ -495,7 +530,7 @@ public class Parser{
     }  
 
 
-    void exp_2()throws IOException{
+    void exp_2() throws IOException{
     if( actual.equals(Yylex.MAS) || actual.equals(Yylex.MENOS) ){
         exp_1();
         exp_2();
@@ -503,20 +538,23 @@ public class Parser{
     }
 
     void exp_1()throws IOException{
-            if( actual.equals(Yylex.MAS)){
-                eat(Yylex.MAS);
-                term();
-            } else if(actual.equals(Yylex.MENOS)){
-                eat(Yylex.MENOS);
-                term();
-            } else{
-                error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
-                " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
-            }
+        if( actual.equals(Yylex.MAS)){
+            eat(Yylex.MAS);
+            term();
+        } else if(actual.equals(Yylex.MENOS)){
+            eat(Yylex.MENOS);
+            term();
+        } else{
+            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+        }
     }
 
     void term()throws IOException{
-            if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) || actual.equals(Yylex.PAR_L)  || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
+            if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) || 
+                actual.equals(Yylex.PAR_L)  || actual.equals(Yylex.NUMEROS) || 
+                actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || 
+                actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
                 unario();
                 term_2();
             } else{
@@ -552,7 +590,6 @@ public class Parser{
     }
 
 
-
     void unario()throws IOException{
             if( actual.equals(Yylex.NEGACION)){
                 eat(Yylex.NEGACION);
@@ -560,7 +597,9 @@ public class Parser{
             } else if(actual.equals(Yylex.MENOS)){
                 eat(Yylex.MENOS);
                 unario();
-            } else if(actual.equals(Yylex.PAR_L)  || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
+            } else if(actual.equals(Yylex.PAR_L)  || actual.equals(Yylex.NUMEROS) || 
+                actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || 
+                actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
                 factor();
             } else{
                 error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
@@ -569,19 +608,15 @@ public class Parser{
     }
 
     void factor()throws IOException{
-            if( actual.equals(Yylex.PAR_L)){
+            if( actual.equals(Yylex.ID)){
+                eat(Yylex.ID);
+                factor_1();
+            } else if(actual.equals(Yylex.PAR_L)){
                 eat(Yylex.PAR_L);
                 bool();
                 eat(Yylex.PAR_R);
             } else if(actual.equals(Yylex.NUMEROS)){
                 eat(Yylex.NUMEROS);
-            } else if(actual.equals(Yylex.ID)){
-                eat(Yylex.ID);
-                eat(Yylex.PAR_L);
-                parametros();
-                eat(Yylex.PAR_R);
-            } else if(actual.equals(Yylex.ID) ){
-                localizacion();
             } else if(actual.equals(Yylex.CADENAS)){
                 eat(Yylex.CADENAS);
             } else if(actual.equals(Yylex.TRUE)){
@@ -594,24 +629,37 @@ public class Parser{
             }
     }
 
+     void factor_1()throws IOException{
+        if(actual.equals(Yylex.COR_L)){
+            localizacion();
+        } else if(actual.equals(Yylex.PAR_L)){
+            eat(Yylex.PAR_L);
+            parametros();
+            eat(Yylex.PAR_R);
+        }
+    }
 
     void parametros()throws IOException{
-            if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) ||actual.equals(Yylex.PAR_L) || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
+            if( actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) ||
+                actual.equals(Yylex.PAR_L) || actual.equals(Yylex.NUMEROS) || 
+                actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || 
+                actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
                 lista_param();
-                
             } 
         }  
         
     void lista_param()throws IOException{
-    if( actual.equals(Yylex.OR)){
-            bool();
-                lista_param_1();
-                
-            } else{
-                error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
-                " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
-            }
-        }  
+    if(actual.equals(Yylex.NEGACION) || actual.equals(Yylex.MENOS) ||
+        actual.equals(Yylex.PAR_L) || actual.equals(Yylex.NUMEROS) || 
+        actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || 
+        actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID)){
+        bool();
+        lista_param_1();            
+    } else{
+        error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
+        " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+    }
+    }  
 
     void lista_param_1()throws IOException{
         if( actual.equals(Yylex.COMA)){
@@ -622,8 +670,10 @@ public class Parser{
     }
     
     void localizacion()throws IOException{
-        if( actual.equals(Yylex.ID)){
-                eat(Yylex.ID);
+        if( actual.equals(Yylex.COR_L)){
+                eat(Yylex.COR_L);
+                bool();
+                eat(Yylex.COR_R);
                 localizacion_1();
             } else{
                 error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
@@ -632,13 +682,12 @@ public class Parser{
     }
 
     void localizacion_1()throws IOException{
-    if( actual.equals(Yylex.COR_L)){
+        if( actual.equals(Yylex.COR_L)){
                 eat(Yylex.COR_L);
                 bool();
                 eat(Yylex.COR_R);
                 localizacion_1();
-            }
-
+            } 
     }
 
     /*Para imprimir msg de error */

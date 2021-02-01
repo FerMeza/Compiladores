@@ -49,12 +49,12 @@ package compilador;
     public static final int PUNCOMA = 138;
     public static final int COMA = 139;
     public static final int DOSPUNTOS = 140;
+    public static final int ID = 141;
     public static final int RETURN = 142;
     public static final int ASIGNACION = 143;
     public static final int ELSE = 144;
-    public static final int ID = 141;
-
-
+    public static final int PRINT = 145;
+    public static final int SCAN = 146;
 
     public Token nextToken(String lex, int num){
         return new Token(num, lex, yyline, yycolumn);
@@ -127,6 +127,8 @@ id = ({letras}|_) ({digito}| {letras}|_) *
 return = return
 asignacion = "="
 else = else
+print = print
+scan = scan
 errores = [^]
 
 /**********************Accion a realizar (retornar un numero) al encontrar un token, Hecho por 
@@ -153,7 +155,6 @@ errores = [^]
 {case} {return nextToken(yytext(), CASE);} /*Valor lex, tipo(case)*/
 {func} {return nextToken(yytext(), FUNC);} /*Valor lex, tipo(func)*/
 {default} {return nextToken(yytext(), DEFAULT);} /*Valor lex, tipo(default)*/
-
 {par_L} {return nextToken(yytext(), PAR_L);} /*Valor lex, tipo("(")*/
 {par_R} {return nextToken(yytext(), PAR_R);} /*Valor lex, tipo(")")*/
 {cor_L} {return nextToken(yytext(), COR_L);} /*Valor lex, tipo([)*/
@@ -180,6 +181,8 @@ errores = [^]
 {return} {return nextToken(yytext(),RETURN);} /*Valor lex, tipo(RETURN)*/
 {asignacion} {return nextToken(yytext(), ASIGNACION);} /*Valor lex, tipo(asignacion)*/
 {else} {return nextToken(yytext(), ELSE);}  /*Valor lex, tipo(else)*/
+{print} {return nextToken(yytext(), PRINT);} /*Valor lex, tipo(print)*/
+{scan} {return nextToken(yytext(), SCAN);} /*Valor lex, tipo(SCAN)*/
 {espacios} {} /*No hace nada, persona lectora de comentarios*/	
 {comenMulti} {}
 {comenLinea} {}	

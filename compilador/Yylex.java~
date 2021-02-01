@@ -827,7 +827,7 @@ class Yylex {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { System.out.println("Error");
+            { System.out.println("Token:" + yytext() + " no reconocido en columna " + yycolumn + " y linea " + yyline);
             }
             // fall through
           case 48: break;
@@ -837,47 +837,47 @@ class Yylex {
             // fall through
           case 49: break;
           case 3:
-            { return nextToken("", NEGACION);
+            { return nextToken(yytext(), NEGACION);
             }
             // fall through
           case 50: break;
           case 4:
-            { return nextToken("", MODULO);
+            { return nextToken(yytext(), MODULO);
             }
             // fall through
           case 51: break;
           case 5:
-            { return nextToken("", PAR_L);
+            { return nextToken(yytext(), PAR_L);
             }
             // fall through
           case 52: break;
           case 6:
-            { return nextToken("", PAR_R);
+            { return nextToken(yytext(), PAR_R);
             }
             // fall through
           case 53: break;
           case 7:
-            { return nextToken("", ASTERISCO);
+            { return nextToken(yytext(), ASTERISCO);
             }
             // fall through
           case 54: break;
           case 8:
-            { return nextToken("", MAS);
+            { return nextToken(yytext(), MAS);
             }
             // fall through
           case 55: break;
           case 9:
-            { return nextToken("", COMA);
+            { return nextToken(yytext(), COMA);
             }
             // fall through
           case 56: break;
           case 10:
-            { return nextToken("", MENOS);
+            { return nextToken(yytext(), MENOS);
             }
             // fall through
           case 57: break;
           case 11:
-            { return nextToken("", DIVISION);
+            { return nextToken(yytext(), DIVISION);
             }
             // fall through
           case 58: break;
@@ -887,27 +887,27 @@ class Yylex {
             // fall through
           case 59: break;
           case 13:
-            { return nextToken("", DOSPUNTOS);
+            { return nextToken(yytext(), DOSPUNTOS);
             }
             // fall through
           case 60: break;
           case 14:
-            { return nextToken("", PUNCOMA);
+            { return nextToken(yytext(), PUNCOMA);
             }
             // fall through
           case 61: break;
           case 15:
-            { return nextToken("", MENOR);
+            { return nextToken(yytext(), MENOR);
             }
             // fall through
           case 62: break;
           case 16:
-            { return nextToken("", ASIGNACION);
+            { return nextToken(yytext(), ASIGNACION);
             }
             // fall through
           case 63: break;
           case 17:
-            { return nextToken("", MAYOR);
+            { return nextToken(yytext(), MAYOR);
             }
             // fall through
           case 64: break;
@@ -917,27 +917,27 @@ class Yylex {
             // fall through
           case 65: break;
           case 19:
-            { return nextToken("", COR_L);
+            { return nextToken(yytext(), COR_L);
             }
             // fall through
           case 66: break;
           case 20:
-            { return nextToken("", COR_R);
+            { return nextToken(yytext(), COR_R);
             }
             // fall through
           case 67: break;
           case 21:
-            { return nextToken("", LLA_L);
+            { return nextToken(yytext(), LLA_L);
             }
             // fall through
           case 68: break;
           case 22:
-            { return nextToken("", LLA_R);
+            { return nextToken(yytext(), LLA_R);
             }
             // fall through
           case 69: break;
           case 23:
-            { return nextToken("", DIFERENTEDE);
+            { return nextToken(yytext(), DIFERENTEDE);
             }
             // fall through
           case 70: break;
@@ -947,7 +947,7 @@ class Yylex {
             // fall through
           case 71: break;
           case 25:
-            { return nextToken("", AND);
+            { return nextToken(yytext(), AND);
             }
             // fall through
           case 72: break;
@@ -957,107 +957,107 @@ class Yylex {
             // fall through
           case 73: break;
           case 27:
-            { return nextToken("", MENORIGUAL);
+            { return nextToken(yytext(), MENORIGUAL);
             }
             // fall through
           case 74: break;
           case 28:
-            { return nextToken("", COMPARACION);
+            { return nextToken(yytext(), COMPARACION);
             }
             // fall through
           case 75: break;
           case 29:
-            { return nextToken("", MAYORIGUAL);
+            { return nextToken(yytext(), MAYORIGUAL);
             }
             // fall through
           case 76: break;
           case 30:
-            { return nextToken("", DO);
+            { return nextToken(yytext(), DO);
             }
             // fall through
           case 77: break;
           case 31:
-            { return nextToken("", IF);
+            { return nextToken(yytext(), IF);
             }
             // fall through
           case 78: break;
           case 32:
-            { return nextToken("", OR);
+            { return nextToken(yytext(), OR);
             }
             // fall through
           case 79: break;
           case 33:
-            { return nextToken("", INT);
+            { return nextToken(yytext(), INT);
             }
             // fall through
           case 80: break;
           case 34:
-            { return nextToken("", CASE);
+            { return nextToken(yytext(), CASE);
             }
             // fall through
           case 81: break;
           case 35:
-            { return nextToken("", CHAR);
+            { return nextToken(yytext(), CHAR);
             }
             // fall through
           case 82: break;
           case 36:
-            { return nextToken("", ELSE);
+            { return nextToken(yytext(), ELSE);
             }
             // fall through
           case 83: break;
           case 37:
-            { return nextToken("", FUNC);
+            { return nextToken(yytext(), FUNC);
             }
             // fall through
           case 84: break;
           case 38:
-            { return nextToken("", TRUE);
+            { return nextToken(yytext(), TRUE);
             }
             // fall through
           case 85: break;
           case 39:
-            { return nextToken("", VOID);
+            { return nextToken(yytext(), VOID);
             }
             // fall through
           case 86: break;
           case 40:
-            { return nextToken("", BREAK);
+            { return nextToken(yytext(), BREAK);
             }
             // fall through
           case 87: break;
           case 41:
-            { return nextToken("", FALSE);
+            { return nextToken(yytext(), FALSE);
             }
             // fall through
           case 88: break;
           case 42:
-            { return nextToken("", FLOAT);
+            { return nextToken(yytext(), FLOAT);
             }
             // fall through
           case 89: break;
           case 43:
-            { return nextToken("", WHILE);
+            { return nextToken(yytext(), WHILE);
             }
             // fall through
           case 90: break;
           case 44:
-            { return nextToken("", DOUBLE);
+            { return nextToken(yytext(), DOUBLE);
             }
             // fall through
           case 91: break;
           case 45:
-            { return nextToken("",RETURN);
+            { return nextToken(yytext(),RETURN);
             }
             // fall through
           case 92: break;
           case 46:
-            { return nextToken("", SWITCH);
+            { return nextToken(yytext(), SWITCH);
             }
             // fall through
           case 93: break;
           case 47:
-            { return nextToken("", DEFAULT);
+            { return nextToken(yytext(), DEFAULT);
             }
             // fall through
           case 94: break;
