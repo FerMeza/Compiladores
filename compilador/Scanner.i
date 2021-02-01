@@ -138,50 +138,50 @@ errores = [^]
 {numeros} {return nextToken(yytext(), NUMEROS, 0);} /*Valor lex, tipo(numero), subtipo(entero)*/
 {decex} {return nextToken(yytext(), DECEX, 1);} /*Valor lex, tipo(numero), subtipo(double)*/
 {cadenas} {return nextToken(yytext(), CADENAS);} /*Valor lex, tipo(cadena)*/
-{true} {return nextToken("", TRUE);} /*Valor lex, tipo(true)*/
-{false} {return nextToken("", FALSE);} /*Valor lex, tipo(false)*/
-{int} {return nextToken("", INT);} /*Valor lex, tipo(int)*/
-{float} {return nextToken("", FLOAT);} /*Valor lex, tipo(float)*/
-{char} {return nextToken("", CHAR);} /*Valor lex, tipo(char)*/
-{double} {return nextToken("", DOUBLE);} /*Valor lex, tipo(void)*/
-{void} {return nextToken("", VOID);} /*Valor lex, tipo(void)*/
-{if} {return nextToken("", IF);} /*Valor lex, tipo(if)*/
-{while} {return nextToken("", WHILE);} /*Valor lex, tipo(while)*/
-{do} {return nextToken("", DO);} /*Valor lex, tipo(do)*/
-{break} {return nextToken("", BREAK);} /*Valor lex, tipo(break)*/
-{switch} {return nextToken("", SWITCH);} /*Valor lex, tipo(switch)*/
-{case} {return nextToken("", CASE);} /*Valor lex, tipo(case)*/
-{func} {return nextToken("", FUNC);} /*Valor lex, tipo(func)*/
-{default} {return nextToken("", DEFAULT);} /*Valor lex, tipo(default)*/
+{true} {return nextToken(yytext(), TRUE);} /*Valor lex, tipo(true)*/
+{false} {return nextToken(yytext(), FALSE);} /*Valor lex, tipo(false)*/
+{int} {return nextToken(yytext(), INT);} /*Valor lex, tipo(int)*/
+{float} {return nextToken(yytext(), FLOAT);} /*Valor lex, tipo(float)*/
+{char} {return nextToken(yytext(), CHAR);} /*Valor lex, tipo(char)*/
+{double} {return nextToken(yytext(), DOUBLE);} /*Valor lex, tipo(void)*/
+{void} {return nextToken(yytext(), VOID);} /*Valor lex, tipo(void)*/
+{if} {return nextToken(yytext(), IF);} /*Valor lex, tipo(if)*/
+{while} {return nextToken(yytext(), WHILE);} /*Valor lex, tipo(while)*/
+{do} {return nextToken(yytext(), DO);} /*Valor lex, tipo(do)*/
+{break} {return nextToken(yytext(), BREAK);} /*Valor lex, tipo(break)*/
+{switch} {return nextToken(yytext(), SWITCH);} /*Valor lex, tipo(switch)*/
+{case} {return nextToken(yytext(), CASE);} /*Valor lex, tipo(case)*/
+{func} {return nextToken(yytext(), FUNC);} /*Valor lex, tipo(func)*/
+{default} {return nextToken(yytext(), DEFAULT);} /*Valor lex, tipo(default)*/
 
-{par_L} {return nextToken("", PAR_L);} /*Valor lex, tipo("(")*/
-{par_R} {return nextToken("", PAR_R);} /*Valor lex, tipo(")")*/
-{cor_L} {return nextToken("", COR_L);} /*Valor lex, tipo([)*/
-{cor_R} {return nextToken("", COR_R);} /*Valor lex, tipo(])*/
-{lla_L} {return nextToken("", LLA_L);} /*Valor lex, tipo({)*/
-{lla_R} {return nextToken("", LLA_R);} /*Valor lex, tipo(})*/
-{mas} {return nextToken("", MAS);} /*Valor lex, tipo(mas)*/
-{menos} {return nextToken("", MENOS);} /*Valor lex, tipo(menos)*/
-{asterisco} {return nextToken("", ASTERISCO);} /*Valor lex, tipo(multip)*/
-{division} {return nextToken("", DIVISION);} /*Valor lex, tipo(division)*/
-{modulo} {return nextToken("", MODULO);} /*Valor lex, tipo(modulo)*/
-{negacion} {return nextToken("", NEGACION);} /*Valor lex, tipo(negado)*/
-{comparacion} {return nextToken("", COMPARACION);} /*Valor lex, tipo(==)*/
-{diferentede} {return nextToken("", DIFERENTEDE);} /*Valor lex, tipo(diferente)*/
-{menor} {return nextToken("", MENOR);} /*Valor lex, tipo(menor)*/
-{menorigual} {return nextToken("", MENORIGUAL);} /*Valor lex, tipo(menorigual)*/
-{mayor} {return nextToken("", MAYOR);} /*Valor lex, tipo(mayor)*/
-{mayorigual} {return nextToken("", MAYORIGUAL);} /*Valor lex, tipo(mayorigual)*/
-{or} {return nextToken("", OR);} /*Valor lex, tipo(||)*/
-{and} {return nextToken("", AND);} /*Valor lex, tipo(&&)*/
-{puncoma} {return nextToken("", PUNCOMA);} /*Valor lex, tipo(puntoycoma)*/
-{coma} {return nextToken("", COMA);} /*Valor lex, tipo(coma)*/
-{dospuntos} {return nextToken("", DOSPUNTOS);} /*Valor lex, tipo(dospuntos)*/
-{return} {return nextToken("",RETURN);} /*Valor lex, tipo(RETURN)*/
-{asignacion} {return nextToken("", ASIGNACION);} /*Valor lex, tipo(asignacion)*/
-{else} {return nextToken("", ELSE);}  /*Valor lex, tipo(else)*/
+{par_L} {return nextToken(yytext(), PAR_L);} /*Valor lex, tipo("(")*/
+{par_R} {return nextToken(yytext(), PAR_R);} /*Valor lex, tipo(")")*/
+{cor_L} {return nextToken(yytext(), COR_L);} /*Valor lex, tipo([)*/
+{cor_R} {return nextToken(yytext(), COR_R);} /*Valor lex, tipo(])*/
+{lla_L} {return nextToken(yytext(), LLA_L);} /*Valor lex, tipo({)*/
+{lla_R} {return nextToken(yytext(), LLA_R);} /*Valor lex, tipo(})*/
+{mas} {return nextToken(yytext(), MAS);} /*Valor lex, tipo(mas)*/
+{menos} {return nextToken(yytext(), MENOS);} /*Valor lex, tipo(menos)*/
+{asterisco} {return nextToken(yytext(), ASTERISCO);} /*Valor lex, tipo(multip)*/
+{division} {return nextToken(yytext(), DIVISION);} /*Valor lex, tipo(division)*/
+{modulo} {return nextToken(yytext(), MODULO);} /*Valor lex, tipo(modulo)*/
+{negacion} {return nextToken(yytext(), NEGACION);} /*Valor lex, tipo(negado)*/
+{comparacion} {return nextToken(yytext(), COMPARACION);} /*Valor lex, tipo(==)*/
+{diferentede} {return nextToken(yytext(), DIFERENTEDE);} /*Valor lex, tipo(diferente)*/
+{menor} {return nextToken(yytext(), MENOR);} /*Valor lex, tipo(menor)*/
+{menorigual} {return nextToken(yytext(), MENORIGUAL);} /*Valor lex, tipo(menorigual)*/
+{mayor} {return nextToken(yytext(), MAYOR);} /*Valor lex, tipo(mayor)*/
+{mayorigual} {return nextToken(yytext(), MAYORIGUAL);} /*Valor lex, tipo(mayorigual)*/
+{or} {return nextToken(yytext(), OR);} /*Valor lex, tipo(||)*/
+{and} {return nextToken(yytext(), AND);} /*Valor lex, tipo(&&)*/
+{puncoma} {return nextToken(yytext(), PUNCOMA);} /*Valor lex, tipo(puntoycoma)*/
+{coma} {return nextToken(yytext(), COMA);} /*Valor lex, tipo(coma)*/
+{dospuntos} {return nextToken(yytext(), DOSPUNTOS);} /*Valor lex, tipo(dospuntos)*/
+{return} {return nextToken(yytext(),RETURN);} /*Valor lex, tipo(RETURN)*/
+{asignacion} {return nextToken(yytext(), ASIGNACION);} /*Valor lex, tipo(asignacion)*/
+{else} {return nextToken(yytext(), ELSE);}  /*Valor lex, tipo(else)*/
 {espacios} {} /*No hace nada, persona lectora de comentarios*/	
 {comenMulti} {}
 {comenLinea} {}	
 {id} {return nextToken(yytext(), ID);} /*Valor lex, tipo(id)*/
-{errores}   {System.out.println("Error");}
+{errores}   {System.out.println("Token:" + yytext() + " no reconocido en columna " + yycolumn + " y linea " + yyline);}

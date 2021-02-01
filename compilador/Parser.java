@@ -575,6 +575,11 @@ public class Parser{
                 eat(Yylex.PAR_R);
             } else if(actual.equals(Yylex.NUMEROS)){
                 eat(Yylex.NUMEROS);
+            } else if(actual.equals(Yylex.ID)){
+                eat(Yylex.ID);
+                eat(Yylex.PAR_L);
+                parametros();
+                eat(Yylex.PAR_R);
             } else if(actual.equals(Yylex.ID) ){
                 localizacion();
             } else if(actual.equals(Yylex.CADENAS)){
@@ -583,11 +588,6 @@ public class Parser{
                 eat(Yylex.TRUE);
             } else if(actual.equals(Yylex.FALSE)){
                 eat(Yylex.FALSE);
-            } else if(actual.equals(Yylex.ID)){
-                eat(Yylex.ID);
-                eat(Yylex.PAR_L);
-                parametros();
-                eat(Yylex.PAR_R);
             } else{
                 error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
                 " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
