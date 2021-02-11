@@ -5,14 +5,19 @@ usamos arraylist que es como un arreglo pero mas pro*/
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Stack;
 
 /*Clase que nos ayuda para el analis sintactico y el semantico*/
 public class Parser{
 	//Declaraciones
-  //Por el momento la tabla de simbolos es un array list
-  ArrayList<Symbol> tablaSimbolos;
-  /*Por el momento la tabla de tipos es un array list, podría ser una hashtable (?)*/
-  ArrayList<Type> tablaTipos;
+
+  //Por el momento la tabla de simbolos es un array list y se
+  // guardan en pila
+  Stack<ArrayList<Symbol>> PilaTS;
+   /*Por el momento la tabla de tipos es un array list y se
+   guardan en una pila*/ 
+
+  Stack<ArrayList<Type>> PilaTT;
   //Necesitamos acceder al lexer, para poder "leer" los tokens
   Yylex lexer;
   
@@ -33,12 +38,6 @@ public class Parser{
         tablaSimbolos = new ArrayList<Symbol>();
         tablaTipos = new ArrayList<Type>();
         
-      	/*Agregamos los tipos nativos del lenguaje*/ 
-        tablaTipos.add(new Type(0, "int", 4, -1, -1));
-        tablaTipos.add(new Type(1, "float", 4, -1, -1));
-        tablaTipos.add(new Type(2, "char", 1, -1, -1));
-        tablaTipos.add(new Type(3, "double", 8, -1, -1));
-        
         /*¿void es un tipo comun? ¿Como debería procesarse? */
         //tablaTipos.add(new Type(1, "void", 4, -1, -1));
   }
@@ -52,13 +51,14 @@ public class Parser{
     } 
     
     /*Eat nos permite consumir el simbolo gramatical actual*/
-    void eat(int i) throws IOException{
+    Token eat(int i) throws IOException{
         if(actual.equals(i)){
             actual = lexer.yylex();
         }else{
             error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
             " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
+        return actual;
     }
     
 /*Funciones que definen a los no terminales*/
@@ -68,7 +68,18 @@ public class Parser{
      void programa()throws IOException{
      	if(actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT) || actual.equals(Yylex.CHAR) 
         || actual.equals(Yylex.DOUBLE) || actual.equals(Yylex.VOID) || actual.equals(Yylex.FUNC)){
-     				declaraciones();
+     		PilaTS.push(new ArrayList<Symbol>);
+            ArrayList<Type> temp = new ArrayList<Type>();
+
+            /*Agregamos los tipos nativos del lenguaje*/ 
+            temp.add(new Type(Yylex.INT, "int", 4, -1, -1));
+            temp.add(new Type(Yylex.FLOAT, "float", 4, -1, -1));
+            temp.add(new Type(Yylex.CHAR, "char", 1, -1, -1));
+            temp.add(new Type(Yylex.DOUBLE, "double", 8, -1, -1));
+            PilaTT.push(temp);
+            dir = 0;
+
+            declaraciones();
             funciones();
         }
         
@@ -81,8 +92,8 @@ public class Parser{
         if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
         || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
         || actual.equals(Yylex.VOID)) {
-        	tipo();
-            lista_var();
+        	Atributos retorno = tipo();
+            lista_var(retorno); //retorno.tipo
             eat(Yylex.PUNCOMA);
             declaraciones();
         }
@@ -90,12 +101,13 @@ public class Parser{
 
      //FIRST(tipo) = {int, float, char, double, void}
      /*tipo → basico compuesto */
-     void tipo()throws IOException{
+     Atributos tipo()throws IOException{
         if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
         || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
         || actual.equals(Yylex.VOID)){
-            basico();
-            compuesto();
+            Atributos retorno = basico();  
+            Atributos retorno2 = compuesto(retorno);
+            return retorno2;
         }
         else{
             error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
@@ -105,27 +117,42 @@ public class Parser{
 
     //FIRST(basico) = {int, float, char, double, void}
     /*basico →  int | float | char | double | void  */
-    void basico()throws IOException
+    Atributos basico()throws IOException
     {
         if (actual.equals(Yylex.INT))
         {
             eat(Yylex.INT);
+            Atributos retorno = new Atributos();
+            retorno.tipo = Yylex.INT;
+            return retorno;
         }
         else if (actual.equals(Yylex.FLOAT))
         {
             eat(Yylex.FLOAT);
+            Atributos retorno = new Atributos();
+            retorno.tipo = Yylex.INT;
+            return retorno;
         }
         else if (actual.equals(Yylex.CHAR))
         {
             eat(Yylex.CHAR);
+            Atributos retorno = new Atributos();
+            retorno.tipo = Yylex.CHAR;
+            return retorno;
         }
         else if (actual.equals(Yylex.DOUBLE))
         {
             eat(Yylex.DOUBLE);
+            Atributos retorno = new Atributos();
+            retorno.tipo = Yylex.DOUBLE;
+            return retorno;
         }
         else if (actual.equals(Yylex.VOID))
         {
             eat(Yylex.VOID);
+            Atributos retorno = new Atributos();
+            retorno.tipo = Yylex.VOID;
+            return retorno;
         }
         else
         {
@@ -136,20 +163,28 @@ public class Parser{
 
     //FIRST(compuesto) = {[, ε}
     /*compuesto →[numero] compuesto | ε */
-    void compuesto()throws IOException
+    Atributos compuesto(Atributos entrada)throws IOException
     {
         if (actual.equals(Yylex.COR_L))
         {
             eat(Yylex.COR_L);
-            eat(Yylex.NUMEROS);
+            Token temporal = eat(Yylex.NUMEROS);
             eat(Yylex.COR_R);
-            compuesto();
+
+            compuesto(entrada);
+            ArrayList <Type> actual = PilaTT.top(); 
+            Type insertar = new Type(actual.);
+            entrada.tipo = actual.add(actual.size(), 
+        } else
+        } else
+        {
+            entrada.tipo = entrada.base;
         }
     }
 
     //FIRST(lista_var) = {id}
     /*lista_var  → id lista_var’ */
-    void lista_var()throws IOException
+    void lista_var(int tipo)throws IOException
     {
         if (actual.equals(Yylex.ID))
         {

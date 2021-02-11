@@ -187,4 +187,4 @@ errores = [^]
 {comenMulti} {}
 {comenLinea} {}	
 {id} {return nextToken(yytext(), ID);} /*Valor lex, tipo(id)*/
-{errores}   {System.out.println("Token:" + yytext() + " no reconocido en columna " + yycolumn + " y linea " + yyline);}
+{errores}   {System.out.println("Error lexico en Token:" + yytext() + " no reconocido en columna " + yycolumn + " y linea " + yyline);}
