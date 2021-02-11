@@ -461,30 +461,29 @@ public class Parser{
         || actual.equals(Yylex.NUMEROS) || actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) 
         || actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
             rel();
-            igualdad_2();
+            igualdad_1();
         } else{
             error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
             " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
-        }
-    }
-
-    void igualdad_2()throws IOException{
-        if( actual.equals(Yylex.COMPARACION) || actual.equals(Yylex.DIFERENTEDE) ){
-            igualdad_1();
-            igualdad_2();
         }
     }
 
     void igualdad_1()throws IOException{
-        if( actual.equals(Yylex.COMPARACION)){
+        if( actual.equals(Yylex.COMPARACION))
+        {
             eat(Yylex.COMPARACION);
             rel();
-        } else if(actual.equals(Yylex.DIFERENTEDE)){
+            igualdad_1();
+        }
+        else if (actual.equals(Yylex.DIFERENTEDE) )
+        {
             eat(Yylex.DIFERENTEDE);
             rel();
-        } else{
-            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
-            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+            igualdad_1();
+        }
+        else
+        {
+            //Prodcuccion vacia
         }
     }
 
@@ -522,31 +521,24 @@ public class Parser{
             actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || 
             actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
             term();
-            exp_2();
+            exp_1();
         } else{
             error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
             " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }  
 
-
-    void exp_2() throws IOException{
-    if( actual.equals(Yylex.MAS) || actual.equals(Yylex.MENOS) ){
-        exp_1();
-        exp_2();
-        }
-    }
-
     void exp_1()throws IOException{
         if( actual.equals(Yylex.MAS)){
             eat(Yylex.MAS);
             term();
+            exp_1();
         } else if(actual.equals(Yylex.MENOS)){
             eat(Yylex.MENOS);
             term();
+            exp_1();
         } else{
-            error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
-            " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+           
         }
     }
 
@@ -556,36 +548,28 @@ public class Parser{
                 actual.equals(Yylex.CADENAS) || actual.equals(Yylex.TRUE) || 
                 actual.equals(Yylex.FALSE) || actual.equals(Yylex.ID) ){
                 unario();
-                term_2();
+                term_1();
             } else{
                 error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
                 " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
             }
     }  
 
-
-    void term_2()throws IOException{
-    if( actual.equals(Yylex.ASTERISCO) || actual.equals(Yylex.DIVISION) || actual.equals(Yylex.MODULO)){
-        term_1();
-        term_2();
-        }
-        
-    }
-
-
     void term_1()throws IOException{
             if( actual.equals(Yylex.ASTERISCO)){
                 eat(Yylex.ASTERISCO);
                 unario();
+                term_1();
             } else if(actual.equals(Yylex.DIVISION)){
                 eat(Yylex.DIVISION);
                 unario();
+                term_1();
             } else if(actual.equals(Yylex.MODULO)){
                 eat(Yylex.MODULO);
                 unario();
+                term_1();
             } else{
-                error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
-                " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
+               
             }
     }
 
