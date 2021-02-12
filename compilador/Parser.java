@@ -374,7 +374,6 @@ public class Parser{
 
     void bloque()throws IOException
     {
-        ArrayList<Type> lista_retorno = null;
         if (actual.equals(Yylex.LLA_L))
         {
             eat(Yylex.LLA_L);
