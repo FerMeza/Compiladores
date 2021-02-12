@@ -1,56 +1,80 @@
 package compilador;
 
-/*Importaciones para la excepcion que es lanzada por ____, 
-usamos arraylist que es como un arreglo pero mas pro*/
+/*
+Se importan la IOException
+ArrayList para el kilo de listas que se ocupan
+Y se utiliza el stack para conservar adecuadamente
+la informacion de funcion en funcion*/
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Stack;
 
-/*Clase que nos ayuda para el analis sintactico y el semantico*/
+/*Esta clase es la mas importante, 
+se encarga de hacer el analisis sintactico con
+ayuda de muchas clases auxiliares*/
 public class Parser{
-	//Declaraciones
 
-  //Por el momento la tabla de simbolos es un array list y se
-  // guardan en pila
-  Stack<ArrayList<Symbol>> PilaTS;
-   /*Por el momento la tabla de tipos es un array list y se
-   guardan en una pila*/ 
-
-  Stack<ArrayList<Type>> PilaTT;
-  //Necesitamos acceder al lexer, para poder "leer" los tokens
+  //Creamos la pila que almacenara toda la tabla de simbolos
+  Stack<TablaSimbolos> PilaTS;
+ 
+  /*Se tiene una pila de las tablas de tipos*/
+  Stack<TablaTipos> PilaTT;
+  
+  Stack<Integer> PilaDir;
+  //Pila de direcciones
+  
+ /*Tenemos un atributo de la clase que es el lexer,
+  este nos sirve para adquirir los tokens correspondientes*/
   Yylex lexer;
   
+  /*El token actual es el token que se esta leyendo en ese momento,
+  uno a uno los tokens se deben de reconocer*/
   public static Token actual = null; 
-  /*La variable actual, es un token y nos indica el token que estamos "procesando"*/
-  /*Atributo direccion...*/
+  
+  /*Es un atributo para almacenar la direccion de esta manera podemos
+  acceder a este atributo de manera "global" dentro de la clase*/
   int dir = 0;
   
+  /*Se definen los tipos que ya estan definidos desde un inicio*/
+  static public Type TVOID = new Type(0, "void", 0, -1, -1);
+  static public Type TINT = new Type(1, "int", 4, -1, -1);
+  static public Type TFLOAT = new Type(2, "float", 4, -1, -1);
+  static public Type TCHAR = new Type(3, "char", 1, -1, -1);
+  static public Type TDOUBLE = new Type(4, "double", 8, -1, -1);
+  
+  /*Se guarda el codigo en forma de cuadruplas*/
+  ArrayList<Cuadruplas> Codigo;
+  Stack<ArrayList<Type>> PilaLR;
   
   //Metodo para instaciar un Parser, recibe un lexer
   public Parser(Yylex lexer)throws IOException{
-  			//Toma el lexer pasado como argumento y lo asigna
+        //Toma el lexer pasado como argumento y lo asigna
         this.lexer = lexer;
         //Recibe el primer Token en la variable global y se convierte en el token actual
         actual = lexer.yylex();
         
-        //Creacion de tabla de simbolos y de tipos
-        tablaSimbolos = new ArrayList<Symbol>();
-        tablaTipos = new ArrayList<Type>();
         
-        /*¿void es un tipo comun? ¿Como debería procesarse? */
-        //tablaTipos.add(new Type(1, "void", 4, -1, -1));
-  }
+        /*En este punto se inicializan estas pilas para poder ser utilizadas despues*/
+        PilaTS = new Stack<>();
+        PilaTT = new Stack<>();
+        PilaDir = new Stack<>();
+        Codigo = new ArrayList<>();
+        PilaLR = new Stack<>();
+        
+    }
 
-		/*EL método parse es más que nada una prueba que posiblemente se irá cambiando
-    en el futuro*/
+    /*Este metodo es el encargado de iniciar el analisis*/
 	void parse()throws IOException{
-        programa();	//simbolo inicial
-        printTS();
-        printTT();
+        programa(); /*Se ejecuta esta funcion que es el simbolo inicial de la gramatica*/
+        //printTS();
+        //printTT();
     } 
     
-    /*Eat nos permite consumir el simbolo gramatical actual*/
+    /*Eat nos sirve para consumir el token actual y en caso de que sea el token erroneo se mostrar
+        un error de sintaxis sencillo, en teoria a futuro se deberia de mostrar el posible simbolo
+        que se esperaba, por el momento simplemente nos indica que simbolo caso el error*/
+    /*En caso de que no se genere el error entonces podemos retornar el token actual*/
     Token eat(int i) throws IOException{
         if(actual.equals(i)){
             actual = lexer.yylex();
@@ -61,135 +85,158 @@ public class Parser{
         return actual;
     }
     
-/*Funciones que definen a los no terminales*/
-	
-      // FIRST(programa) = {ε, int, float, char, double, void, func} 
-    /*programa → declaraciones funciones*/
-     void programa()throws IOException{
+    /*Funcion que detecta si se retorna el tipo que fue definido para la funcion*/
+    public boolean equivalentesLista(ArrayList <Type> lista, Type tipo)
+    {
+        if (lista!=null){
+            for (Type x: lista)
+            {
+            if (x != tipo)
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /*A continuacion se definen las funciones que se relacionan directamente con los simbolos
+    gramaticales que son no terminales*/
+    
+    /*Programa es el simbolo inicial de la gramatica, por ende es lo primero que se manda llamar
+    indirectamente con otro metodo para iniciar el analisis sintactico y semantico*/
+    
+    /*PilaTS.push(nuevaTablaTS())
+    PilaTT.push(nuevaTablaTT())
+    dir  = 0
+    */
+    
+    /*programa → {PilaTS.push(nuevaTablaTS())
+    PilaTT.push(nuevaTablaTT())
+    dir  = 0} declaraciones funciones*/
+    
+    void programa()throws IOException{
      	if(actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT) || actual.equals(Yylex.CHAR) 
         || actual.equals(Yylex.DOUBLE) || actual.equals(Yylex.VOID) || actual.equals(Yylex.FUNC)){
-     		PilaTS.push(new ArrayList<Symbol>);
-            ArrayList<Type> temp = new ArrayList<Type>();
-
-            /*Agregamos los tipos nativos del lenguaje*/ 
-            temp.add(new Type(Yylex.INT, "int", 4, -1, -1));
-            temp.add(new Type(Yylex.FLOAT, "float", 4, -1, -1));
-            temp.add(new Type(Yylex.CHAR, "char", 1, -1, -1));
-            temp.add(new Type(Yylex.DOUBLE, "double", 8, -1, -1));
-            PilaTT.push(temp);
+     	    
+            /*Las acciones semanticas de esta funcion se traducen de una manera directa...*/
+            PilaTS.push(new TablaSimbolos("Global"));
+            PilaTT.push(new TablaTipos("Global"));
             dir = 0;
 
             declaraciones();
             funciones();
+            PilaTS.peek().printTS();
+            System.out.println();
+            PilaTT.peek().printTT();
+            PilaTS.pop();
+            PilaTT.pop();
         }
-        
-       
-     }
+          
+    }
      
-     //FIRST(declaraciones) = {ε, int, float, char, double, void}
-     /* declaraciones → tipo lista_var ; declaraciones | ε */
-     void declaraciones()throws IOException{
+    void declaraciones()throws IOException{
         if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
         || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
         || actual.equals(Yylex.VOID)) {
-        	Atributos retorno = tipo();
-            lista_var(retorno); //retorno.tipo
+            Type Tipotipo = tipo();
+            lista_var(Tipotipo); 
             eat(Yylex.PUNCOMA);
             declaraciones();
         }
-     }
+        else
+        {
+            /*Estas son las acciones semanticas cuando produce vacio :D*/
+            /*...No hay acciones semanticas...*/
+        }
+    }
 
-     //FIRST(tipo) = {int, float, char, double, void}
-     /*tipo → basico compuesto */
-     Atributos tipo()throws IOException{
+    Type tipo()throws IOException{
+        Type retorno = null;
         if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
         || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
         || actual.equals(Yylex.VOID)){
-            Atributos retorno = basico();  
-            Atributos retorno2 = compuesto(retorno);
-            return retorno2;
+            Type Tipobasico = basico();
+            /*El atributo de "base" al final de cuentas es un tipo,
+            es perfectamente valido pasarle un tipo de nuestra clase tipo*/
+            retorno = compuesto(Tipobasico);
         }
         else{
+            /*Manda error porque no hay produccion vacia!*/
             error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
             " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
-     }
+        return retorno;
+    }
 
-    //FIRST(basico) = {int, float, char, double, void}
-    /*basico →  int | float | char | double | void  */
-    Atributos basico()throws IOException
-    {
+    /*Retorna el tipo de dato dependiendo del token*/
+    Type basico()throws IOException{
         if (actual.equals(Yylex.INT))
         {
             eat(Yylex.INT);
-            Atributos retorno = new Atributos();
-            retorno.tipo = Yylex.INT;
-            return retorno;
+            return TINT;
         }
         else if (actual.equals(Yylex.FLOAT))
         {
             eat(Yylex.FLOAT);
-            Atributos retorno = new Atributos();
-            retorno.tipo = Yylex.INT;
-            return retorno;
+            return TFLOAT;
         }
         else if (actual.equals(Yylex.CHAR))
         {
             eat(Yylex.CHAR);
-            Atributos retorno = new Atributos();
-            retorno.tipo = Yylex.CHAR;
-            return retorno;
+            return TCHAR;
         }
         else if (actual.equals(Yylex.DOUBLE))
         {
             eat(Yylex.DOUBLE);
-            Atributos retorno = new Atributos();
-            retorno.tipo = Yylex.DOUBLE;
-            return retorno;
+            return TDOUBLE;
         }
         else if (actual.equals(Yylex.VOID))
         {
             eat(Yylex.VOID);
-            Atributos retorno = new Atributos();
-            retorno.tipo = Yylex.VOID;
-            return retorno;
+            return TVOID;
         }
         else
         {
             error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
             " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
+        return null;
     }
-
-    //FIRST(compuesto) = {[, ε}
-    /*compuesto →[numero] compuesto | ε */
-    Atributos compuesto(Atributos entrada)throws IOException
-    {
-        if (actual.equals(Yylex.COR_L))
-        {
-            eat(Yylex.COR_L);
-            Token temporal = eat(Yylex.NUMEROS);
+    
+    Type compuesto(Type BaseH)throws IOException{
+        if (actual.equals(Yylex.COR_L)){
+            Token temporal = eat(Yylex.COR_L);
+            /*Se guarda el numero para usarlo despues*/
+            eat(Yylex.NUMEROS);
             eat(Yylex.COR_R);
-
-            compuesto(entrada);
-            ArrayList <Type> actual = PilaTT.top(); 
-            Type insertar = new Type(actual.);
-            entrada.tipo = actual.add(actual.size(), 
-        } else
-        } else
-        {
-            entrada.tipo = entrada.base;
+            /*Se le pasa como parametro el tipo Base, ademas es heredado
+            Retorna el tipo de compuesto 1 que sera pasado para crear el
+            arreglo del numero de elementos que se indique*/
+            Type com1Tipo = compuesto(BaseH);
+            /*Se llama "a_insertar" porque se agrega como nuevo tipo, pero tambien
+            se deberia de llamar "a_retornar" porque tambien se retorna!!!*/
+            Type a_insertar = new Type(0, "array", com1Tipo.tam*Integer.parseInt(temporal.valor),
+                    Integer.parseInt(temporal.valor), com1Tipo.id);
+            PilaTT.peek().insertar(a_insertar);
+            return a_insertar;
+        } else{
+            /*Cuando se produce epsilon simplemente se retorna lo que se pase como parametro*/
+            return BaseH;
         }
+
     }
 
-    //FIRST(lista_var) = {id}
-    /*lista_var  → id lista_var’ */
-    void lista_var(int tipo)throws IOException
-    {
-        if (actual.equals(Yylex.ID))
-        {
+    void lista_var(Type listavTipo)throws IOException{
+        if (actual.equals(Yylex.ID)){
+            if(!PilaTS.peek().buscar(actual.valor)){
+                Symbol sim = new Symbol(actual.valor, dir, listavTipo, "var", null);
+                PilaTS.peek().insertar(sim);
+                dir = dir + listavTipo.tam;
+            } else{
+                error("Error semantico en la linea " + Integer.toString(actual.linea) +
+                    "y en la columna " + Integer.toString(actual.columna) + " el id ya fue declarado: " + actual.valor);
+            }
             eat(Yylex.ID);
-            lista_var_1();
+            lista_var_1(listavTipo);
         }
         else
         {
@@ -197,83 +244,137 @@ public class Parser{
             " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
     }
-
-    //FIRST(lista_var’) = {”,” , ε}
-    /* lista_var’ → , id lista_var’ | ε*/
-    void lista_var_1()throws IOException
-    {
-        if (actual.equals(Yylex.COMA))
-        {
+    
+    void lista_var_1(Type listav1Tipo)throws IOException{
+        if (actual.equals(Yylex.COMA)){
             eat(Yylex.COMA);
+            if(!PilaTS.peek().buscar(actual.valor)){
+                Symbol sim = new Symbol(actual.valor, dir, listav1Tipo, "var", null);
+                PilaTS.peek().insertar(sim);
+                dir = dir + listav1Tipo.tam;
+            } else{
+                error("Error semantico en la linea " + Integer.toString(actual.linea) +
+                   " y en la columna " + Integer.toString(actual.columna) + " el id ya fue declarado: " + actual.valor);
+            }
             eat(Yylex.ID);
-            lista_var_1();
+            lista_var_1(listav1Tipo);
+        } else
+        {
+            /*Cuando se produce epsilon no hay reglas semanticas!!*/
         }
     }
 
-    //FIRST(funciones) = {func, ε}
-    /*funciones  → func tipo id ( argumentos ) bloque funciones | ε */
     void funciones()throws IOException
     {
         if (actual.equals(Yylex.FUNC))
         {
             eat(Yylex.FUNC);
-            tipo();
-            eat(Yylex.ID);
-            eat(Yylex.PAR_L);
-            argumentos();
-            eat(Yylex.PAR_R);
-            bloque();
+            
+            ArrayList<Type> ListaRetorno = null;
+            Type tipoTipo = tipo();
+            Token id = new Token(actual);
+            if (!PilaTS.peek().buscar(id.valor)) {
+                eat(Yylex.ID);
+                PilaTS.push(new TablaSimbolos(id.valor));
+                PilaTT.push(new TablaTipos(id.valor));
+                PilaDir.push(dir);
+                PilaLR.push(new ArrayList<Type>());
+                dir = 0;
+
+                eat(Yylex.PAR_L);
+                ArrayList<Type> argsLista = argumentos();
+                eat(Yylex.PAR_R);
+                Cuadruplas tempor = new Cuadruplas("label", "", "", id.valor);
+                Codigo.add(tempor);
+                Cuadruplas labBloque = new Cuadruplas("B");
+                bloque();
+                Codigo.add(labBloque);
+                if (equivalentesLista(PilaLR.pop(), tipoTipo)) {
+                    PilaTS.peek().printTS();
+                    System.out.println();
+                    PilaTT.peek().printTT();
+                    PilaTS.pop();
+                    PilaTT.pop();
+                    PilaTS.peek().insertar(id.valor, tipoTipo, 0, "func", argsLista);
+                } else{
+                    error("Error semantico en la linea " + Integer.toString(id.linea) +
+                   "y en la columna " + Integer.toString(id.columna) + " los tipos de"
+                            + " retorno no coinciden con el de la funcion: " + id.valor);
+                }
+            } else {
+                error("Error semantico en la linea " + Integer.toString(actual.linea) +
+                " y en la columna " + Integer.toString(actual.columna) + " el id ya fue declarado: " + actual.valor);
+            }
+            dir = PilaDir.pop();
             funciones();
-        }
-    }
-
-    //FIRST (argumentos) = {int, float, char, double, void, ε}
-    /* argumentos  → lista_args | ε*/
-    void argumentos()throws IOException
-    {
-        if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
-        || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
-        || actual.equals(Yylex.VOID))
+        } else
         {
-            lista_args();
+            /*No se ejecuta ninguna accion semantica*/
         }
     }
 
-    //FIRST(lista_args) = {int, float, char, double, void}
-    /*lista_args →tipo id lista_args’  */
-    void lista_args()throws IOException
-    {
+    ArrayList<Type> argumentos()throws IOException{
+        ArrayList<Type> argsLista = null;
         if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
         || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
         || actual.equals(Yylex.VOID)){
-            tipo();
+            argsLista = lista_args();
+        }else{
+            argsLista = null;
+        }
+        return argsLista;
+    }
+
+    ArrayList<Type> lista_args()throws IOException
+    {
+        ArrayList<Type> listaArgsS = null;
+        if (actual.equals(Yylex.INT) || actual.equals(Yylex.FLOAT)
+        || actual.equals(Yylex.CHAR) || actual.equals(Yylex.DOUBLE)
+        || actual.equals(Yylex.VOID)){
+            Type tipoTipo = tipo();
+            if (!PilaTS.peek().buscar(actual.valor)) {
+                PilaTS.peek().insertar(actual.valor, tipoTipo, dir, "param", null);
+                dir = dir + tipoTipo.tam;
+            }else{
+                error("Error semantico en la linea " + Integer.toString(actual.linea) +
+                    "y en la columna " + Integer.toString(actual.columna) + " el id ya fue declarado: " + actual.valor);
+            }
             eat(Yylex.ID);
-            lista_args_1();
+            ArrayList<Type> nuevaLista = new ArrayList<>();
+            nuevaLista.add(tipoTipo);
+            listaArgsS = lista_args_1(nuevaLista);
         }
         else
         {
             error("Error de sintaxis en la linea " + Integer.toString(actual.linea) + 
             " y en la columna " + Integer.toString(actual.columna) + " del simbolo " + actual);
         }
+        return listaArgsS;
     }
 
-    // FIRST(lista_args’) = {”,” , ε}
-    /*lista_args’→ ,tipo id lista_args’ | ε */
-    void lista_args_1()throws IOException
-    {
-        if (actual.equals(Yylex.COMA))
-        {
+    ArrayList<Type> lista_args_1(ArrayList<Type> ListaH)throws IOException{
+        if (actual.equals(Yylex.COMA)){
             eat(Yylex.COMA);
-            tipo();
+            Type tipoTipo = tipo();
+            if (!PilaTS.peek().buscar(actual.valor)) {
+                PilaTS.peek().insertar(actual.valor, tipoTipo, dir, "param", null);
+                dir = dir + tipoTipo.tam;
+            }else{
+                error("Error semantico en la linea " + Integer.toString(actual.linea) +
+                        "y en la columna " + Integer.toString(actual.columna) + " el id ya fue declarado: " + actual.valor);
+            }
             eat(Yylex.ID);
-            lista_args_1();
+            ListaH.add(tipoTipo);
+            ArrayList<Type> listaS = lista_args_1(ListaH);
+            return listaS;
+        }else{
+            return ListaH;
         }
     }
 
-    //FIRST(bloque) = {“{”}
-    /*bloque  → { declaraciones instrucciones } */
     void bloque()throws IOException
     {
+        ArrayList<Type> lista_retorno = null;
         if (actual.equals(Yylex.LLA_L))
         {
             eat(Yylex.LLA_L);
@@ -288,8 +389,6 @@ public class Parser{
         }
     }
     
-    //FIRST(instrucciones) = {if, while, do, break, ‘{’, return, switch, print, scan, id} 
-    /*instrucciones → sentencia instrucciones’ */
     void instrucciones()throws IOException
     {
         if (actual.equals(Yylex.IF) || actual.equals(Yylex.ID) ||
@@ -297,8 +396,10 @@ public class Parser{
             actual.equals(Yylex.BREAK) || actual.equals(Yylex.LLA_L) ||
             actual.equals(Yylex.SWITCH) || actual.equals(Yylex.RETURN) ||
             actual.equals(Yylex.PRINT) || actual.equals(Yylex.SCAN))
-        {
+        {      
+            Cuadruplas labSentencia = new Cuadruplas("S");
             sentencia();
+            Codigo.add(labSentencia);
             instrucciones_1();
         }
         else
@@ -308,8 +409,6 @@ public class Parser{
         }   
     }
 
-    //FIRST(instrucciones’) ={if, while, do, break, ‘{’, return, switch, print, scan, id,ε }
-    /* instrucciones’ → sentencia instrucciones’ | ε*/
     void instrucciones_1()throws IOException
     {
         if (actual.equals(Yylex.IF) || actual.equals(Yylex.ID) ||
@@ -318,12 +417,13 @@ public class Parser{
             actual.equals(Yylex.SWITCH) || actual.equals(Yylex.RETURN) ||
             actual.equals(Yylex.PRINT) || actual.equals(Yylex.SCAN))
         {
+            Cuadruplas labSentencia = new Cuadruplas("S");
             sentencia();
+            Codigo.add(labSentencia);
             instrucciones_1();
         }
     }
 
-    //FIRST(sentencia) = {if, while, do, break, ‘{’, return, switch, print, scan, id }
     void sentencia()throws IOException{
         if(actual.equals(Yylex.ID)){
             parte_izquierda();
@@ -715,7 +815,7 @@ public class Parser{
     }
 
     //Para buscar si el id se encuentra en la tabla de simbolos
-    boolean buscar(String id){
+    boolean buscar(String id, ArrayList<Symbol> tablaSimbolos){
         for(Symbol s: tablaSimbolos){
             if(s.id.equals(id)){
                 return true;
@@ -725,7 +825,7 @@ public class Parser{
     }
 
     //Retorna el tamaño de un tipo en la tabla de tipos
-    int getTam(int id){
+    int getTam(int id, ArrayList<Type> tablaTipos){
         for(Type t : tablaTipos){
             if(id== t.id){
                 return t.tam;
@@ -734,22 +834,6 @@ public class Parser{
         return -1;
     }
 
-    //Para imprimir la tabla de tipos
-    void printTT(){
-        System.out.println("Tabla de tipos");
-        for(Type t : tablaTipos){
-            System.out.println(t.id+"\t"+t.type+"\t"+t.tam+"\t"+t.elem+"\t"+t.tipoBase);
-        }    
-    }
 
-    //Para imprimir la tabla de simbolos
-    void printTS(){
-        System.out.println("Tabla de símbolos");
-        int i=0;
-        for(Symbol s : tablaSimbolos){
-            System.out.println(""+i+"\t"+s.id+"\t"+s.dir+"\t"+s.type+"\t"+s.var);
-            i++;
-        }    
-    }
 
 }

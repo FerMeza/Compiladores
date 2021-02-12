@@ -7,21 +7,38 @@ import java.util.ArrayList;
 
 public class Symbol {
     /* Tipo, que en este caso se identifica con un entero*/
-    int type;
+    Type tipo;
     /*Direccion local de memoria */
     int dir;
     /*El string del identificador */
     String id;
     /* */
-    int var;
+    String clasificacion;
     /*Argumentos y sus tipos de una funcion ? */
-    ArrayList<Integer> args;
+    ArrayList<Type> args;
 
-    public Symbol(String id, int dir, int type, int var, ArrayList<Integer> args){
+    public Symbol(String id, int dir, Type tipo, String clas, ArrayList<Type> args){
         this.id = id;
         this.dir = dir;
-        this.type = type;
-        this.var = var;
+        this.tipo = tipo;
+        this.clasificacion = clas;
         this.args = args;
+    }
+    
+    public String toString(){
+        String temp = " [";
+        if (args == null)
+        {
+            temp += " nulo";
+        }
+        else
+        {
+            for (Type t: args)
+            {
+                temp += " " + Integer.toString(t.id);
+            }
+        }
+        temp += " ] ";
+        return id +" "+ Integer.toString(tipo.id) +" " + Integer.toString(dir) + " " + clasificacion + temp;
     }
 }

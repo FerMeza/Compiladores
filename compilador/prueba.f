@@ -1,7 +1,7 @@
 int  a, b, c; 
 float d, _23VAca; 
-double[3][5] arr1, arr2; 
-func float miFuncion ( int x, float y )
+double[3][5] x, y; 
+func float miFuncion1 ( int x, float y )
 {
     a = 2;
     do{

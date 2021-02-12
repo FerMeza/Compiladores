@@ -8,6 +8,15 @@ public class Token{
     int linea;
     int columna;
 
+    public Token(Token copia)
+    {
+        this.clase = copia.clase;
+        this.valor = copia.valor;
+        this.type = copia.type;
+        this.linea = copia.linea;
+        this.columna = copia.columna;
+    }
+
     /* Constructor ocupado en el analizador lexico, para almacenar el valor lexico y el tipo (id) */
     public Token(int clase, String valor, int linea, int columna){
         this.clase = clase;

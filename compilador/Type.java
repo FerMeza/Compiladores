@@ -24,4 +24,23 @@ public class Type {
         this.elem = elem;
         this.tipoBase = tipoBase;
     }
+    
+    public Type(Type copy){
+        this.id = copy.id;
+        this.type = copy.type;
+        this.tam = copy.tam;
+        this.elem = copy.elem;
+        this.tipoBase = copy.tipoBase;
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        return this.id == ((Type)obj).id;
+    }
+    
+    public String toString()
+    {
+        return Integer.toString(id) + " " + type + " " + Integer.toString(tam) 
+                + " " + Integer.toString(elem) + " " + Integer.toString(tipoBase);
+    }
 }
