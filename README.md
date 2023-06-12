@@ -8,10 +8,19 @@ The folders "Assignment 2," "Assignment 7," and "Lexical Analyzer" contain the l
 
 ## Deploy and test compiler
 
-First run the next command:
-```
+To test this on Linux on the Compiler folder run:
 
 ```
+javac -d . src/compilador/*.java
+```
+
+This would generate all the .class files, test in the same directory with the next command:
+
+```
+java compilador.Main <file_name>
+```
+
+\<file_name\> should be subsituted by prueba.f or any other file that follows the rules of the file "Gramatica2021-Final.pdf"
 
 ## Technologies Used
 
